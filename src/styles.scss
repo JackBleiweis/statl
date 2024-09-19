@@ -1,5 +1,5 @@
 body {
-  font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
   margin: 0;
   padding: 0;
   background-color: #121213;
@@ -115,10 +115,13 @@ td {
   cursor: pointer;
 }
 
-td:not(.can-hover-row td, .can-hover-column td, .can-hover-team[data-team="true"]) {
+td:not(
+    .can-hover-row td,
+    .can-hover-column td,
+    .can-hover-team[data-team="true"]
+  ) {
   background-color: #1a1a1b;
   color: #d7dadc;
-
 }
 
 .revealed {
