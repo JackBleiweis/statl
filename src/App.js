@@ -19,6 +19,8 @@ const App = () => {
   );
   const [revealAllNonSeasonTeam, setRevealAllNonSeasonTeam] = useState(false);
   const [revealAll, setRevealAll] = useState(false);
+  const [hoveredRow, setHoveredRow] = useState(null);
+  const [hoveredColumn, setHoveredColumn] = useState(null);
 
   useEffect(() => {
     const playerNames = Object.keys(playersData);
@@ -54,6 +56,7 @@ const App = () => {
       setCanRevealColumn(true);
       setSelectionCount((prevCount) => prevCount + 1);
       updatePrompt();
+      setHoveredRow(null);
     }
   };
 
@@ -122,8 +125,8 @@ const App = () => {
   };
 
   const getTableClassName = () => {
-    if (canRevealRow) return "can-hover-row";
-    if (canRevealColumn) return "can-hover-column";
+    if (selectionCount === 0) return "can-hover-row";
+    if (selectionCount === 1) return "can-hover-column";
     if (selectionCount >= 2 && revealedTeamCells.length < 2)
       return "can-hover-team";
     if (selectionCount === 4) return "can-hover-cell";
@@ -171,69 +174,109 @@ const App = () => {
           <thead>
             <tr>
               {filteredStats.map((key) => (
-                <th
-                  key={key}
-                  onClick={() => canRevealColumn && handleColumnClick(key)}
-                  style={{
-                    cursor:
-                      canRevealColumn && key !== "Tm" ? "pointer" : "default",
-                  }}
-                >
-                  {key}
-                </th>
+                <th key={key}>{key}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {playersData[randomPlayer].Season.map((_, index) => (
+            {playersData[randomPlayer].Season.map((_, rowIndex) => (
               <tr
-                key={index}
-                onClick={() => canRevealRow && handleRowClick(index)}
+                key={rowIndex}
+                onClick={() => canRevealRow && handleRowClick(rowIndex)}
+                onMouseEnter={() => canRevealRow && setHoveredRow(rowIndex)}
+                onMouseLeave={() => canRevealRow && setHoveredRow(null)}
               >
-                {filteredStats.map((key) => (
+                {filteredStats.map((key, colIndex) => (
                   <td
                     key={key}
                     data-team={key === "Tm" ? "true" : "false"}
                     onClick={() => {
-                      if (
+                      if (canRevealColumn && key !== "Tm") {
+                        handleColumnClick(key);
+                      } else if (
                         key === "Tm" &&
                         selectionCount >= 2 &&
                         revealedTeamCells.length < 2 &&
-                        !revealedTeamCells.includes(index)
+                        !revealedTeamCells.includes(rowIndex)
                       ) {
-                        handleTeamCellClick(index);
-                      }
-                      if (selectionCount === 4) {
+                        handleTeamCellClick(rowIndex);
+                      } else if (selectionCount === 4) {
                         handleFifthSelection(key);
-                      }
-                      if (selectionCount === 5) {
+                      } else if (selectionCount === 5) {
                         handleSixthSelection();
                       }
                     }}
+                    onMouseEnter={() =>
+                      canRevealColumn && setHoveredColumn(colIndex)
+                    }
+                    onMouseLeave={() =>
+                      canRevealColumn && setHoveredColumn(null)
+                    }
                     style={{
                       cursor:
+                        canRevealRow ||
+                        (canRevealColumn && key !== "Tm") ||
                         (key === "Tm" &&
                           selectionCount >= 2 &&
                           revealedTeamCells.length < 2 &&
-                          !revealedTeamCells.includes(index)) ||
+                          !revealedTeamCells.includes(rowIndex)) ||
                         (selectionCount === 4 &&
                           key !== "Season" &&
                           key !== "Tm") ||
                         selectionCount === 5
                           ? "pointer"
                           : "default",
+                      backgroundColor:
+                        (canRevealRow && rowIndex === hoveredRow) ||
+                        (canRevealColumn && colIndex === hoveredColumn)
+                          ? "#b59f3b"
+                          : revealedRow === rowIndex ||
+                            revealedColumn === key ||
+                            (key === "Tm" &&
+                              revealedTeamCells.includes(rowIndex)) ||
+                            (revealAllNonSeasonTeam &&
+                              key !== "Season" &&
+                              key !== "Tm") ||
+                            revealAll
+                          ? "#4a4a4c"
+                          : selectionCount === 4 &&
+                            (key === "Season" || key === "Tm")
+                          ? "#1a1a1b"
+                          : "",
+                      color:
+                        (canRevealRow && rowIndex === hoveredRow) ||
+                        (canRevealColumn && colIndex === hoveredColumn) ||
+                        revealedRow === rowIndex ||
+                        revealedColumn === key ||
+                        (key === "Tm" &&
+                          revealedTeamCells.includes(rowIndex)) ||
+                        (revealAllNonSeasonTeam &&
+                          key !== "Season" &&
+                          key !== "Tm") ||
+                        revealAll
+                          ? "#ffffff"
+                          : "",
+                      borderColor:
+                        (selectionCount === 4 &&
+                          key !== "Season" &&
+                          key !== "Tm") ||
+                        (selectionCount === 5 &&
+                          key === "Season" &&
+                          key == "Tm")
+                          ? "#6e6e6e"
+                          : "",
                     }}
                   >
-                    {revealedRow === index ||
+                    {revealedRow === rowIndex ||
                     revealedColumn === key ||
-                    (key === "Tm" && revealedTeamCells.includes(index)) ||
+                    (key === "Tm" && revealedTeamCells.includes(rowIndex)) ||
                     (revealAllNonSeasonTeam &&
                       key !== "Season" &&
                       key !== "Tm") ||
                     revealAll
                       ? key === "Season"
-                        ? playersData[randomPlayer][key][index].slice(2)
-                        : playersData[randomPlayer][key][index]
+                        ? playersData[randomPlayer][key][rowIndex].slice(2)
+                        : playersData[randomPlayer][key][rowIndex]
                       : ""}
                   </td>
                 ))}

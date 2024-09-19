@@ -2,8 +2,8 @@ body {
   font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f6f7f8;
-  color: #1a1a1b;
+  background-color: #121213;
+  color: #d7dadc;
 }
 
 .container {
@@ -18,15 +18,16 @@ h1 {
   font-weight: 700;
   margin-bottom: 20px;
   letter-spacing: 0.2px;
+  color: #ffffff;
 }
 
 .sticky-header {
   position: sticky;
   top: 0;
-  background: #f6f7f8;
+  background: #1a1a1b;
   padding: 10px;
   z-index: 1;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 3px rgba(255, 255, 255, 0.12);
 }
 
 .input-container {
@@ -39,9 +40,11 @@ input[type="text"] {
   padding: 14px;
   margin-right: 6px;
   font-size: 16px;
-  border: 2px solid #d3d6da;
+  border: 2px solid #3a3a3c;
   border-radius: 4px;
   outline: none;
+  background-color: #1a1a1b;
+  color: #d7dadc;
 }
 
 button {
@@ -49,7 +52,7 @@ button {
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  background-color: #6aaa64;
+  background-color: #538d4e;
   color: white;
   border: none;
   border-radius: 4px;
@@ -57,47 +60,107 @@ button {
 }
 
 button:hover {
-  background-color: #538d4e;
+  background-color: #6aaa64;
 }
 
 table {
   border-collapse: separate;
-  border-spacing: 5px;
+  border-spacing: 6px; /* Increased from 4px to 6px */
   margin: 0 auto;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
 }
 
-th, td {
-  border: 2px solid #d3d6da;
-  padding: 0;
+th {
+  padding: 10px;
   text-align: center;
-  font-size: 18px;
+  font-size: 14px;
   font-weight: bold;
-  width: 60px;
-  height: 60px;
-  transition: all 0.3s ease;
-  box-sizing: border-box;
+  color: #d7dadc;
+  background-color: transparent;
+  border: none;
 }
 
-.can-hover-row tr:hover td,
-.can-hover-column th:hover,
+td {
+  border: 1px solid #3a3a3c;
+  padding: 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  width: 50px;
+  height: 32px; /* Slightly increased from 30px to 32px */
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  background-color: #1a1a1b;
+  color: #d7dadc;
+  border-radius: 4px;
+}
+
+.can-hover-row tr:hover td {
+  background-color: #b59f3b;
+  border-color: #b59f3b;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+/* Add this new rule for subsequent hover states */
 .can-hover-column td:hover,
-.can-hover-team td[data-team="true"]:hover {
-  background-color: #c9b458;
-  border-color: #c9b458;
-  color: white;
+.can-hover-team td[data-team="true"]:hover,
+.can-hover-cell td:hover,
+.can-hover-all td:hover {
+  background-color: #b59f3b;
+  border-color: #b59f3b;
+  color: #ffffff;
   cursor: pointer;
 }
 
 td:not(.can-hover-row td, .can-hover-column td, .can-hover-team[data-team="true"]) {
-  background-color: #787c7e;
-  color: white;
+  background-color: #1a1a1b;
+  color: #d7dadc;
+
 }
 
 .revealed {
-  background-color: #6aaa64;
-  border-color: #6aaa64;
-  color: white;
+  background-color: #538d4e;
+  border-color: #538d4e;
+  color: #ffffff;
+}
+
+/* New styles for the third step */
+.can-hover-team td:not([data-team="true"]) {
+  background-color: #121213;
+  color: #6e6e6e;
+  cursor: not-allowed;
+}
+
+.can-hover-team td[data-team="true"] {
+  background-color: #1a1a1b;
+  color: #d7dadc;
+  cursor: pointer;
+  border-color: #6e6e6e;
+}
+
+.can-hover-team td[data-team="true"]:hover {
+  background-color: #b59f3b;
+  border-color: #b59f3b;
+  color: #ffffff;
+}
+
+/* New styles for the fourth selection */
+.can-hover-cell td[data-key="Season"],
+.can-hover-cell td[data-key="Tm"] {
+  background-color: #0e0e0f;
+  color: #4a4a4c;
+  cursor: not-allowed;
+}
+
+.can-hover-cell td:not([data-key="Season"]):not([data-key="Tm"]) {
+  cursor: pointer;
+}
+
+.can-hover-cell td:not([data-key="Season"]):not([data-key="Tm"]):hover {
+  background-color: #b59f3b;
+  border-color: #b59f3b;
+  color: #ffffff;
 }
