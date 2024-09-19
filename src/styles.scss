@@ -118,7 +118,11 @@ td {
   pointer-events: none;
 }
 
-td:not(.can-hover-row td, .can-hover-column td, .can-hover-team[data-team="true"]) {
+td:not(
+    .can-hover-row td,
+    .can-hover-column td,
+    .can-hover-team[data-team="true"]
+  ) {
   background-color: #1a1a1b;
   color: #d7dadc;
 }
@@ -182,4 +186,49 @@ td:not(.can-hover-row td, .can-hover-column td, .can-hover-team[data-team="true"
   background-color: #4a90e2;
   border-color: #4a90e2;
   color: #ffffff;
+}
+
+/* Responsive styles for screens less than 700px */
+@media screen and (max-width: 699px) {
+  .container {
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .input-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  table {
+    position: static;
+    transform: none;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  td {
+    width: 40px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  th {
+    font-size: 12px;
+    padding: 5px;
+  }
 }
