@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import playersData from "./players.json";
-import { NHL } from "./leagueEnum";
+import { NHL, NBA, NFL, MLB } from "./leagueEnum";
 import Modal from "./modal";
 import "./styles.scss";
 
@@ -22,6 +22,13 @@ const App = () => {
   const [revealAll, setRevealAll] = useState(false);
   const [hoveredRow, setHoveredRow] = useState(null);
   const [hoveredColumn, setHoveredColumn] = useState(null);
+  const [hintsUsed, setHintsUsed] = useState([]);
+  const [gameOver, setGameOver] = useState(false);
+  const [gameResult, setGameResult] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [leagueEnum, setLeagueEnum] = useState(null);
+  const [careerLength, setCareerLength] = useState(0);
   const [hoveredCell, setHoveredCell] = useState(null);
   const [hoveredAllCells, setHoveredAllCells] = useState(false);
   const [hoveredSeasonTeamColumn, setHoveredSeasonTeamColumn] = useState(null);
@@ -32,6 +39,24 @@ const App = () => {
       playerNames[Math.floor(Math.random() * playerNames.length)];
     setRandomPlayer(randomName);
     console.log(randomName);
+    setCareerLength(playersData[randomName].Lg.length);
+    const playerLeague = playersData[randomName].Lg[0];
+    switch (playerLeague) {
+      case "NHL":
+        setLeagueEnum(NHL);
+        break;
+      case "NBA":
+        setLeagueEnum(NBA);
+        break;
+      case "NFL":
+        setLeagueEnum(NFL);
+        break;
+      case "MLB":
+        setLeagueEnum(MLB);
+        break;
+      default:
+        console.error("Unknown league:", playerLeague);
+    }
   }, []);
 
   const handleGuessChange = (event) => {
@@ -39,6 +64,9 @@ const App = () => {
   };
 
   const handleGuessSubmit = () => {
+    const newGuessCount = guessCount + 1;
+    setGuessCount(newGuessCount);
+
     if (guess.toLowerCase() === randomPlayer.toLowerCase()) {
       setMessage("Correct! You guessed the player.");
       setRevealedRow(null);
@@ -46,10 +74,18 @@ const App = () => {
       setCanRevealRow(false);
       setCanRevealColumn(false);
       setPrompt("");
+      setIsModalOpen(true);
+      setGameOver(true);
+      setGameResult("win");
     } else {
       setMessage("Incorrect. Try again.");
-      setGuessCount((prevCount) => prevCount + 1);
       updatePrompt();
+
+      if (newGuessCount >= 6) {
+        setIsModalOpen(true);
+        setGameOver(true);
+        setGameResult("lose");
+      }
     }
   };
 
@@ -61,16 +97,18 @@ const App = () => {
       setSelectionCount((prevCount) => prevCount + 1);
       updatePrompt();
       setHoveredRow(null);
+      setHintsUsed((prevHints) => [...prevHints, index]);
       setRevealedTeamCells([index]);
     }
   };
 
-  const handleColumnClick = (key) => {
+  const handleColumnClick = (key, index) => {
     if (canRevealColumn && revealedColumn === null && key !== "Tm") {
       setRevealedColumn(key);
       setCanRevealColumn(false);
       setSelectionCount((prevCount) => prevCount + 1);
       updatePrompt();
+      setHintsUsed((prevHints) => [...prevHints, index]);
     }
   };
 
@@ -83,15 +121,16 @@ const App = () => {
       setRevealedTeamCells((prev) => [...prev, index]);
       setSelectionCount((prevCount) => prevCount + 1);
       updatePrompt();
+      setHintsUsed((prevHints) => [...prevHints, index]);
     }
   };
 
   const handleFifthSelection = (key) => {
-    console.log("in here");
     if (selectionCount === 4 && key !== "Season" && key !== "Tm") {
       setRevealAllNonSeasonTeam(true);
       setSelectionCount((prevCount) => prevCount + 1);
       updatePrompt();
+      setHintsUsed((prevHints) => [...prevHints, 1]);
     }
   };
 
@@ -100,6 +139,7 @@ const App = () => {
       setRevealAll(true);
       setSelectionCount((prevCount) => prevCount + 1);
       updatePrompt();
+      setHintsUsed((prevHints) => [...prevHints, 1]);
     }
   };
 
@@ -136,25 +176,52 @@ const App = () => {
     return "";
   };
 
-  const filteredStats = Object.values(NHL).filter((stat) => stat !== "Lg");
+  const filteredStats = leagueEnum
+    ? Object.values(leagueEnum).filter((stat) => stat !== "Lg")
+    : [];
 
-  console.log(selectionCount);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  function formatTime(seconds) {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+  }
+
   return (
     <div className="container">
-      <Modal
-        player={randomPlayer}
-        isOpen={true}
-        onClose={() => {}}
-        stats={{
-          gamesPlayed: 0,
-          winPercentage: 0,
-          currentStreak: 0,
-          maxStreak: 0,
-        }}
-        hints={[5, 4, 0, 2]}
-        gameResult="win"
-        guessCount={guessCount}
-      />
+      {gameOver && (
+        <button
+          className="modal-toggle-button"
+          onClick={isModalOpen ? handleCloseModal : handleOpenModal}
+        >
+          {isModalOpen ? "Close Results" : "Show Results"}
+        </button>
+      )}
+      {isModalOpen && (
+        <Modal
+          player={randomPlayer}
+          isOpen={true}
+          onClose={handleCloseModal}
+          stats={{
+            gamesPlayed: 0,
+            winPercentage: 0,
+            currentStreak: 0,
+            maxStreak: 0,
+          }}
+          hints={hintsUsed}
+          gameResult={gameResult}
+          guessCount={guessCount}
+          leagueLength={Object.keys(leagueEnum).length}
+          careerLength={careerLength}
+        />
+      )}
       <h1>Guess the Player</h1>
       <div className="sticky-header">
         <h3>Guesses: {guessCount}</h3>
@@ -185,7 +252,7 @@ const App = () => {
         {message && <p>{message}</p>}
         {prompt && <h2>{prompt}</h2>}
       </div>
-      {randomPlayer && (
+      {randomPlayer && leagueEnum && (
         <table className={getTableClassName()}>
           <thead>
             <tr>
@@ -208,7 +275,7 @@ const App = () => {
                     data-team={key === "Tm" ? "true" : "false"}
                     onClick={() => {
                       if (canRevealColumn && key !== "Tm") {
-                        handleColumnClick(key);
+                        handleColumnClick(key, colIndex);
                       } else if (
                         key === "Tm" &&
                         selectionCount >= 2 &&
