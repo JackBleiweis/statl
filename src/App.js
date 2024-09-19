@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import playersData from "./players.json";
 import { NHL } from "./leagueEnum";
+import Modal from "./modal";
 import "./styles.scss";
 
 const App = () => {
@@ -139,6 +140,20 @@ const App = () => {
   console.log(selectionCount);
   return (
     <div className="container">
+      <Modal
+        player={randomPlayer}
+        isOpen={true}
+        onClose={() => {}}
+        stats={{
+          gamesPlayed: 0,
+          winPercentage: 0,
+          currentStreak: 0,
+          maxStreak: 0,
+        }}
+        hints={[5, 4, 0, 2]}
+        gameResult="win"
+        guessCount={guessCount}
+      />
       <h1>Guess the Player</h1>
       <div className="sticky-header">
         <h3>Guesses: {guessCount}</h3>
