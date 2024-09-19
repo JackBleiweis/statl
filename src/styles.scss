@@ -98,21 +98,24 @@ td {
 }
 
 .can-hover-row tr:hover td {
-  background-color: #b59f3b;
-  border-color: #b59f3b;
+  background-color: #4a90e2;
+  border-color: #4a90e2;
   color: #ffffff;
   cursor: pointer;
 }
 
-/* Add this new rule for subsequent hover states */
 .can-hover-column td:hover,
 .can-hover-team td[data-team="true"]:hover,
 .can-hover-cell td:hover,
 .can-hover-all td:hover {
-  background-color: #b59f3b;
-  border-color: #b59f3b;
+  background-color: #4a90e2;
   color: #ffffff;
   cursor: pointer;
+}
+
+/* Add this new rule to prevent hover on the team column during column selection */
+.can-hover-column td[data-key="Tm"] {
+  pointer-events: none;
 }
 
 td:not(.can-hover-row td, .can-hover-column td, .can-hover-team[data-team="true"]) {
@@ -142,8 +145,8 @@ td:not(.can-hover-row td, .can-hover-column td, .can-hover-team[data-team="true"
 }
 
 .can-hover-team td[data-team="true"]:hover {
-  background-color: #b59f3b;
-  border-color: #b59f3b;
+  background-color: #4a90e2;
+  border-color: #4a90e2;
   color: #ffffff;
 }
 
@@ -160,7 +163,24 @@ td:not(.can-hover-row td, .can-hover-column td, .can-hover-team[data-team="true"
 }
 
 .can-hover-cell td:not([data-key="Season"]):not([data-key="Tm"]):hover {
-  background-color: #b59f3b;
-  border-color: #b59f3b;
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+  color: #ffffff;
+}
+
+.can-hover-all td {
+  cursor: pointer;
+}
+
+.can-hover-all td:hover {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+  color: #ffffff;
+}
+
+/* New styles for the fifth selection */
+.can-hover-cell td:not([data-key="Season"]):not([data-key="Tm"]):hover {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
   color: #ffffff;
 }

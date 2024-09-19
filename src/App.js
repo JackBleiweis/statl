@@ -22,6 +22,9 @@ const App = () => {
   const [revealAll, setRevealAll] = useState(false);
   const [hoveredRow, setHoveredRow] = useState(null);
   const [hoveredColumn, setHoveredColumn] = useState(null);
+  const [hoveredCell, setHoveredCell] = useState(null);
+  const [hoveredAllCells, setHoveredAllCells] = useState(false);
+  const [hoveredSeasonTeamColumn, setHoveredSeasonTeamColumn] = useState(null);
 
   useEffect(() => {
     const playerNames = Object.keys(playersData);
@@ -58,6 +61,7 @@ const App = () => {
       setSelectionCount((prevCount) => prevCount + 1);
       updatePrompt();
       setHoveredRow(null);
+      setRevealedTeamCells([index]);
     }
   };
 
@@ -73,13 +77,10 @@ const App = () => {
   const handleTeamCellClick = (index) => {
     if (
       selectionCount >= 2 &&
-      revealedTeamCells.length < 2 &&
+      revealedTeamCells.length < 3 &&
       !revealedTeamCells.includes(index)
     ) {
-      setRevealedTeamCells((prev) => {
-        const newRevealedTeamCells = [...prev, index];
-        return newRevealedTeamCells;
-      });
+      setRevealedTeamCells((prev) => [...prev, index]);
       setSelectionCount((prevCount) => prevCount + 1);
       updatePrompt();
     }
@@ -128,7 +129,7 @@ const App = () => {
   const getTableClassName = () => {
     if (selectionCount === 0) return "can-hover-row";
     if (selectionCount === 1) return "can-hover-column";
-    if (selectionCount >= 2 && revealedTeamCells.length < 2)
+    if (selectionCount >= 2 && revealedTeamCells.length < 3)
       return "can-hover-team";
     if (selectionCount === 4) return "can-hover-cell";
     if (selectionCount === 5) return "can-hover-all";
@@ -211,7 +212,7 @@ const App = () => {
                       } else if (
                         key === "Tm" &&
                         selectionCount >= 2 &&
-                        revealedTeamCells.length < 2 &&
+                        revealedTeamCells.length < 3 &&
                         !revealedTeamCells.includes(rowIndex)
                       ) {
                         handleTeamCellClick(rowIndex);
@@ -221,19 +222,38 @@ const App = () => {
                         handleSixthSelection();
                       }
                     }}
-                    onMouseEnter={() =>
-                      canRevealColumn && setHoveredColumn(colIndex)
-                    }
-                    onMouseLeave={() =>
-                      canRevealColumn && setHoveredColumn(null)
-                    }
+                    onMouseEnter={() => {
+                      if (canRevealColumn && key !== "Tm") {
+                        setHoveredColumn(colIndex);
+                      }
+                      if (selectionCount === 4) {
+                        setHoveredCell({ row: rowIndex, col: key });
+                      }
+                      if (
+                        selectionCount === 5 &&
+                        (key === "Season" || key === "Tm")
+                      ) {
+                        setHoveredSeasonTeamColumn(true);
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      if (canRevealColumn) {
+                        setHoveredColumn(null);
+                      }
+                      if (selectionCount === 4) {
+                        setHoveredCell(null);
+                      }
+                      if (selectionCount === 5) {
+                        setHoveredSeasonTeamColumn(false);
+                      }
+                    }}
                     style={{
                       cursor:
                         canRevealRow ||
                         (canRevealColumn && key !== "Tm") ||
                         (key === "Tm" &&
                           selectionCount >= 2 &&
-                          revealedTeamCells.length < 2 &&
+                          revealedTeamCells.length < 3 &&
                           !revealedTeamCells.includes(rowIndex)) ||
                         (selectionCount === 4 &&
                           key !== "Season" &&
@@ -243,8 +263,17 @@ const App = () => {
                           : "default",
                       backgroundColor:
                         (canRevealRow && rowIndex === hoveredRow) ||
-                        (canRevealColumn && colIndex === hoveredColumn)
-                          ? "#b59f3b"
+                        (canRevealColumn &&
+                          colIndex === hoveredColumn &&
+                          key !== "Tm") ||
+                        (selectionCount === 4 &&
+                          hoveredCell &&
+                          key !== "Season" &&
+                          key !== "Tm") ||
+                        (selectionCount === 5 &&
+                          (key === "Season" || key === "Tm") &&
+                          hoveredSeasonTeamColumn)
+                          ? "#4a90e2"
                           : revealedRow === rowIndex ||
                             revealedColumn === key ||
                             (key === "Tm" &&
@@ -260,7 +289,17 @@ const App = () => {
                           : "",
                       color:
                         (canRevealRow && rowIndex === hoveredRow) ||
-                        (canRevealColumn && colIndex === hoveredColumn) ||
+                        (canRevealColumn &&
+                          colIndex === hoveredColumn &&
+                          key !== "Tm") ||
+                        (selectionCount === 4 &&
+                          hoveredCell &&
+                          key !== "Season" &&
+                          key !== "Tm") ||
+                        (selectionCount === 5 && hoveredAllCells) ||
+                        (selectionCount === 5 &&
+                          (key === "Season" || key === "Tm") &&
+                          hoveredSeasonTeamColumn) ||
                         revealedRow === rowIndex ||
                         revealedColumn === key ||
                         (key === "Tm" &&
@@ -276,8 +315,7 @@ const App = () => {
                           key !== "Season" &&
                           key !== "Tm") ||
                         (selectionCount === 5 &&
-                          key === "Season" &&
-                          key == "Tm")
+                          (key === "Season" || key === "Tm"))
                           ? "#6e6e6e"
                           : "",
                     }}
