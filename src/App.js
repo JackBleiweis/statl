@@ -273,14 +273,6 @@ const App = () => {
 
   return (
     <div className="container">
-      {gameOver && (
-        <button
-          className="modal-toggle-button"
-          onClick={isModalOpen ? handleCloseModal : handleOpenModal}
-        >
-          {isModalOpen ? "Close Results" : "Show Results"}
-        </button>
-      )}
       {isModalOpen && (
         <Modal
           player={randomPlayer}
