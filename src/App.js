@@ -3,11 +3,29 @@ import playersData from "./players.json";
 import { NHL, NBA, MLB, NFLQB, NFLRB, NFLWR } from "./leagueEnum";
 import Modal from "./modal";
 import "./styles.scss";
+import GuessInput from "./GuessInput";
+import logo from "./statl-logo.png"; // Import the logo
+
+import styled from "styled-components";
+
+const LogoContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  margin-top: 20px;
+`;
+
+const ResponsiveLogo = styled.img`
+  width: 50%;
+  max-width: 300px;
+  height: auto;
+`;
 
 const App = () => {
   const [randomPlayer, setRandomPlayer] = useState(null);
   const [guess, setGuess] = useState("");
-  const [message, setMessage] = useState("");
   const [revealedRow, setRevealedRow] = useState(null);
   const [revealedColumn, setRevealedColumn] = useState(null);
   const [canRevealRow, setCanRevealRow] = useState(true);
@@ -15,9 +33,6 @@ const App = () => {
   const [guessCount, setGuessCount] = useState(0);
   const [revealedTeamCells, setRevealedTeamCells] = useState([]);
   const [selectionCount, setSelectionCount] = useState(0);
-  const [prompt, setPrompt] = useState(
-    "Make a guess or reveal a row about the mystery player."
-  );
   const [revealAllNonSeasonTeam, setRevealAllNonSeasonTeam] = useState(false);
   const [revealAll, setRevealAll] = useState(false);
   const [hoveredRow, setHoveredRow] = useState(null);
@@ -26,6 +41,7 @@ const App = () => {
   const [gameOver, setGameOver] = useState(false);
   const [gameResult, setGameResult] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const [leagueEnum, setLeagueEnum] = useState(null);
   const [careerLength, setCareerLength] = useState(0);
@@ -66,34 +82,46 @@ const App = () => {
     }
   }, []);
 
-  const handleGuessChange = (event) => {
-    setGuess(event.target.value);
-  };
+  useEffect(() => {
+    console.log(gameOver);
+    if (gameOver) {
+      setIsModalOpen(true);
+      // If the game is over, reveal all data cells
+      if (gameOver) {
+        setRevealedRow(null);
+        setRevealedColumn(null);
+        setCanRevealRow(false);
+        setCanRevealColumn(false);
+        setRevealAllNonSeasonTeam(true);
+        setRevealAll(true);
+      }
+    }
+    console.log("in here");
+  }, [gameOver]);
 
-  const handleGuessSubmit = () => {
+  const handleGuessSubmit = (option) => {
     const newGuessCount = guessCount + 1;
     setGuessCount(newGuessCount);
-
-    if (guess.toLowerCase() === randomPlayer.toLowerCase()) {
-      setMessage("Correct! You guessed the player.");
+    console.log(option);
+    if (option.toLowerCase() === randomPlayer.toLowerCase()) {
       setRevealedRow(null);
       setRevealedColumn(null);
       setCanRevealRow(false);
       setCanRevealColumn(false);
-      setPrompt("");
+
       setIsModalOpen(true);
       setGameOver(true);
       setGameResult("win");
-    } else {
-      setMessage("Incorrect. Try again.");
-      updatePrompt();
 
+      return true;
+    } else {
       if (newGuessCount >= 6) {
         setIsModalOpen(true);
         setGameOver(true);
         setGameResult("lose");
       }
     }
+    setShowDropdown(false);
   };
   const handleRowClick = (index) => {
     if (canRevealRow && revealedRow === null) {
@@ -101,7 +129,7 @@ const App = () => {
       setCanRevealRow(false);
       setCanRevealColumn(true);
       setSelectionCount((prevCount) => prevCount + 1);
-      updatePrompt();
+
       setHoveredRow(null);
       setHintsUsed((prevHints) => [...prevHints, index]);
       setRevealedTeamCells([index]);
@@ -113,7 +141,7 @@ const App = () => {
       setRevealedColumn(key);
       setCanRevealColumn(false);
       setSelectionCount((prevCount) => prevCount + 1);
-      updatePrompt();
+
       setHintsUsed((prevHints) => [...prevHints, index]);
     }
   };
@@ -126,7 +154,7 @@ const App = () => {
     ) {
       setRevealedTeamCells((prev) => [...prev, index]);
       setSelectionCount((prevCount) => prevCount + 1);
-      updatePrompt();
+
       setHintsUsed((prevHints) => [...prevHints, index]);
     }
   };
@@ -135,7 +163,7 @@ const App = () => {
     if (selectionCount === 4 && key !== "Season" && key !== "Tm") {
       setRevealAllNonSeasonTeam(true);
       setSelectionCount((prevCount) => prevCount + 1);
-      updatePrompt();
+
       setHintsUsed((prevHints) => [...prevHints, 1]);
     }
   };
@@ -144,35 +172,13 @@ const App = () => {
     if (selectionCount === 5) {
       setRevealAll(true);
       setSelectionCount((prevCount) => prevCount + 1);
-      updatePrompt();
+
       setHintsUsed((prevHints) => [...prevHints, 1]);
     }
   };
 
-  const updatePrompt = () => {
-    const availableActions = [];
-    if (selectionCount === 0) {
-      availableActions.push("reveal a row");
-    } else if (selectionCount === 1) {
-      availableActions.push("reveal a column (except team)");
-    } else if (selectionCount === 2 || selectionCount === 3) {
-      availableActions.push("reveal a team cell");
-    } else if (selectionCount === 4) {
-      availableActions.push("reveal any cell (except season and team)");
-    } else if (selectionCount === 5) {
-      availableActions.push("reveal any remaining cell");
-    }
-    availableActions.push("make a guess");
-
-    if (availableActions.length > 1) {
-      const lastAction = availableActions.pop();
-      setPrompt(`You can ${availableActions.join(", ")} or ${lastAction}.`);
-    } else {
-      setPrompt(`You can ${availableActions[0]}.`);
-    }
-  };
-
   const getTableClassName = () => {
+    if (gameOver) return "";
     if (selectionCount === 0) return "can-hover-row";
     if (selectionCount === 1) return "can-hover-column";
     if (selectionCount >= 2 && revealedTeamCells.length < 3)
@@ -228,35 +234,18 @@ const App = () => {
           careerLength={careerLength}
         />
       )}
-      <h1>Guess the Player</h1>
+      <LogoContainer>
+        <ResponsiveLogo src={logo} alt="Statl Logo" />
+      </LogoContainer>
       <div className="sticky-header">
-        <h3>Guesses: {guessCount}</h3>
-        <div className="input-container">
-          <input
-            type="text"
-            value={guess}
-            onChange={handleGuessChange}
-            placeholder="Enter player name"
-            list="players"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleGuessSubmit();
-              }
-            }}
-          />
-          <datalist id="players">
-            {Object.keys(playersData)
-              .filter((player) =>
-                player.toLowerCase().includes(guess.toLowerCase())
-              )
-              .map((player) => (
-                <option key={player} value={player} />
-              ))}
-          </datalist>
-          <button onClick={handleGuessSubmit}>Submit Guess</button>
-        </div>
-        {message && <p>{message}</p>}
-        {prompt && <h2>{prompt}</h2>}
+        <GuessInput
+          guess={guess}
+          setGuess={setGuess}
+          handleGuessSubmit={handleGuessSubmit}
+          disabled={gameOver}
+          guessCount={guessCount}
+          setGiveUp={setGameOver}
+        />
       </div>
       {randomPlayer && leagueEnum && (
         <table className={getTableClassName()}>
@@ -271,15 +260,22 @@ const App = () => {
             {playersData[randomPlayer].Season.map((_, rowIndex) => (
               <tr
                 key={rowIndex}
-                onClick={() => canRevealRow && handleRowClick(rowIndex)}
-                onMouseEnter={() => canRevealRow && setHoveredRow(rowIndex)}
-                onMouseLeave={() => canRevealRow && setHoveredRow(null)}
+                onClick={() =>
+                  !gameOver && canRevealRow && handleRowClick(rowIndex)
+                }
+                onMouseEnter={() =>
+                  !gameOver && canRevealRow && setHoveredRow(rowIndex)
+                }
+                onMouseLeave={() =>
+                  !gameOver && canRevealRow && setHoveredRow(null)
+                }
               >
                 {filteredStats.map((key, colIndex) => (
                   <td
                     key={key}
                     data-team={key === "Tm" ? "true" : "false"}
                     onClick={() => {
+                      if (gameOver) return;
                       if (canRevealColumn && key !== "Tm") {
                         handleColumnClick(key, colIndex);
                       } else if (
@@ -296,6 +292,7 @@ const App = () => {
                       }
                     }}
                     onMouseEnter={() => {
+                      if (gameOver) return;
                       if (canRevealColumn && key !== "Tm") {
                         setHoveredColumn(colIndex);
                       }
@@ -310,6 +307,7 @@ const App = () => {
                       }
                     }}
                     onMouseLeave={() => {
+                      if (gameOver) return;
                       if (canRevealColumn) {
                         setHoveredColumn(null);
                       }
@@ -321,46 +319,49 @@ const App = () => {
                       }
                     }}
                     style={{
-                      cursor:
-                        canRevealRow ||
-                        (canRevealColumn && key !== "Tm") ||
-                        (key === "Tm" &&
-                          selectionCount >= 2 &&
-                          revealedTeamCells.length < 3 &&
-                          !revealedTeamCells.includes(rowIndex)) ||
-                        (selectionCount === 4 &&
-                          key !== "Season" &&
-                          key !== "Tm") ||
-                        selectionCount === 5
-                          ? "pointer"
-                          : "default",
-                      backgroundColor:
-                        (canRevealRow && rowIndex === hoveredRow) ||
-                        (canRevealColumn &&
-                          colIndex === hoveredColumn &&
-                          key !== "Tm") ||
-                        (selectionCount === 4 &&
-                          hoveredCell &&
-                          key !== "Season" &&
-                          key !== "Tm") ||
-                        (selectionCount === 5 &&
-                          (key === "Season" || key === "Tm") &&
-                          hoveredSeasonTeamColumn)
-                          ? "#4a90e2"
-                          : revealedRow === rowIndex ||
-                            revealedColumn === key ||
-                            (key === "Tm" &&
-                              revealedTeamCells.includes(rowIndex)) ||
-                            (revealAllNonSeasonTeam &&
-                              key !== "Season" &&
-                              key !== "Tm") ||
-                            revealAll
-                          ? "#4a4a4c"
-                          : selectionCount === 4 &&
-                            (key === "Season" || key === "Tm")
-                          ? "#1a1a1b"
-                          : "",
+                      cursor: gameOver
+                        ? "default"
+                        : canRevealRow ||
+                          (canRevealColumn && key !== "Tm") ||
+                          (key === "Tm" &&
+                            selectionCount >= 2 &&
+                            revealedTeamCells.length < 3 &&
+                            !revealedTeamCells.includes(rowIndex)) ||
+                          (selectionCount === 4 &&
+                            key !== "Season" &&
+                            key !== "Tm") ||
+                          selectionCount === 5
+                        ? "pointer"
+                        : "default",
+                      backgroundColor: gameOver
+                        ? "#4a4a4c"
+                        : (canRevealRow && rowIndex === hoveredRow) ||
+                          (canRevealColumn &&
+                            colIndex === hoveredColumn &&
+                            key !== "Tm") ||
+                          (selectionCount === 4 &&
+                            hoveredCell &&
+                            key !== "Season" &&
+                            key !== "Tm") ||
+                          (selectionCount === 5 &&
+                            (key === "Season" || key === "Tm") &&
+                            hoveredSeasonTeamColumn)
+                        ? "#4a90e2"
+                        : revealedRow === rowIndex ||
+                          revealedColumn === key ||
+                          (key === "Tm" &&
+                            revealedTeamCells.includes(rowIndex)) ||
+                          (revealAllNonSeasonTeam &&
+                            key !== "Season" &&
+                            key !== "Tm") ||
+                          revealAll
+                        ? "#4a4a4c"
+                        : selectionCount === 4 &&
+                          (key === "Season" || key === "Tm")
+                        ? "#1a1a1b"
+                        : "",
                       color:
+                        gameOver ||
                         (canRevealRow && rowIndex === hoveredRow) ||
                         (canRevealColumn &&
                           colIndex === hoveredColumn &&
