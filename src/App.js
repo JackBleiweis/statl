@@ -91,11 +91,14 @@ const App = () => {
     // Check if the game was already played today
     const lastPlayedOn = localStorage.getItem("lastPlayedDate");
     const todaysDate = new Date().toISOString().split("T")[0];
-    console.log("todayUpTop", todaysDate);
-    console.log("last", lastPlayedOn);
 
     if (lastPlayedOn === todaysDate) {
       setGameOver(true);
+      // Read hints from localStorage
+      const storedHints = localStorage.getItem("hintsUsed");
+      if (storedHints) {
+        setHintsUsed(JSON.parse(storedHints));
+      }
     }
   }, []);
 
@@ -122,13 +125,10 @@ const App = () => {
         : 0;
       const lastPlayedDate = localStorage.getItem("lastPlayedDate");
       const today = new Date().toISOString().split("T")[0];
-      console.log("today", today);
 
       // Only increment games played if it's a new day
-      console.log("lastPlayedDate", lastPlayedDate);
-      console.log("today", today);
+
       if (lastPlayedDate !== today) {
-        console.log("incrementing games played");
         localStorage.setItem("statl_gamesPlayed", (gamesPlayed + 1).toString());
         localStorage.setItem("lastPlayedDate", today);
       }
@@ -142,8 +142,11 @@ const App = () => {
       } else {
         localStorage.setItem("currentStreak", "0");
       }
+
+      // Update localStorage with hints
+      localStorage.setItem("hintsUsed", JSON.stringify(hintsUsed));
     }
-  }, [gameOver, gameResult]);
+  }, [gameOver, gameResult, hintsUsed]);
 
   const handleGuessSubmit = (option) => {
     const newGuessCount = guessCount + 1;
