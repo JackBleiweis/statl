@@ -89,15 +89,13 @@ const App = () => {
     }
 
     // Check if the game was already played today
-    const lastPlayedOn = localStorage.getItem("lastPlayedOn");
+    const lastPlayedOn = localStorage.getItem("lastPlayedDate");
     const todaysDate = new Date().toISOString().split("T")[0];
     console.log("todayUpTop", todaysDate);
     console.log("last", lastPlayedOn);
 
     if (lastPlayedOn === todaysDate) {
       setGameOver(true);
-    } else {
-      localStorage.setItem("lastPlayedOn", todaysDate);
     }
   }, []);
 
@@ -127,7 +125,10 @@ const App = () => {
       console.log("today", today);
 
       // Only increment games played if it's a new day
+      console.log("lastPlayedDate", lastPlayedDate);
+      console.log("today", today);
       if (lastPlayedDate !== today) {
+        console.log("incrementing games played");
         localStorage.setItem("statl_gamesPlayed", (gamesPlayed + 1).toString());
         localStorage.setItem("lastPlayedDate", today);
       }
@@ -141,8 +142,6 @@ const App = () => {
       } else {
         localStorage.setItem("currentStreak", "0");
       }
-
-      localStorage.setItem("playedToday", "true");
     }
   }, [gameOver, gameResult]);
 
