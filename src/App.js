@@ -41,12 +41,10 @@ const App = () => {
   const [gameOver, setGameOver] = useState(false);
   const [gameResult, setGameResult] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
 
   const [leagueEnum, setLeagueEnum] = useState(null);
   const [careerLength, setCareerLength] = useState(0);
   const [hoveredCell, setHoveredCell] = useState(null);
-  const [hoveredAllCells, setHoveredAllCells] = useState(false);
   const [hoveredSeasonTeamColumn, setHoveredSeasonTeamColumn] = useState(null);
 
   useEffect(() => {
@@ -186,7 +184,6 @@ const App = () => {
         localStorage.setItem("currentStreak", "0");
       }
     }
-    setShowDropdown(false);
   };
   const handleRowClick = (index) => {
     if (canRevealRow && revealedRow === null) {
@@ -260,16 +257,6 @@ const App = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
-  }
 
   return (
     <div className="container">
@@ -427,7 +414,6 @@ const App = () => {
                           hoveredCell &&
                           key !== "Season" &&
                           key !== "Tm") ||
-                        (selectionCount === 5 && hoveredAllCells) ||
                         (selectionCount === 5 &&
                           (key === "Season" || key === "Tm") &&
                           hoveredSeasonTeamColumn) ||
