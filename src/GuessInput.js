@@ -8,6 +8,7 @@ const InputContainer = styled.div`
   margin: 0 auto;
   display: flex;
   align-items: center;
+  height: 100%; // Add this to make the container take full height
 `;
 
 const Input = styled.input`
@@ -19,6 +20,7 @@ const Input = styled.input`
   color: #d7dadc;
   box-sizing: border-box;
   font-weight: bold;
+  margin: 0 0; // Add this to center vertically
 
   &:focus {
     outline: none;
@@ -43,6 +45,7 @@ const GuessCounter = styled.div`
 const ActionButton = styled.button`
   margin-left: 10px;
   min-width: ${(props) => (props.isGiveUp ? "80px" : "30px")};
+  max-width: ${(props) => (props.isGiveUp ? "80px" : "30px")};
   height: 30px;
   display: flex;
   justify-content: center;
