@@ -53,6 +53,17 @@ export const NFLWR = {
   TOUCHDOWNS: "TD",
 };
 
+export const NFLD = {
+  SEASON: "Season",
+  TEAM: "Tm",
+  GAMES_PLAYED: "G",
+  INTERCEPTIONS: "Int",
+  PASSES_DEFLECTED: "PD",
+  FUMBLES_FORCED: "FF",
+  COMBINED: "Comb",
+  TACKLES_FOR_LOSS: "TFL",
+};
+
 export const MLB = {
   SEASON: "Season",
   TEAM: "Tm",

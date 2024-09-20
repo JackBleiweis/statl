@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import playersData from "./players.json";
-import { NHL, NBA, MLB, NFLQB, NFLRB, NFLWR } from "./leagueEnum";
+import { NHL, NBA, MLB, NFLQB, NFLRB, NFLWR, NFLD } from "./leagueEnum";
 import Modal from "./modal";
 import "./styles.scss";
 import GuessInput from "./GuessInput";
@@ -58,9 +58,13 @@ const App = () => {
     const dateIndex =
       Math.floor(utcDate / (24 * 60 * 60 * 1000)) % playerNames.length;
     const randomName = playerNames[dateIndex];
+    console.log(dateIndex);
     setRandomPlayer(randomName);
     setCareerLength(playersData[randomName].Age.length);
-    const playerLeague = playersData[randomName].Lg[0];
+    const playerLeague = playersData[randomName].Lg
+      ? playersData[randomName].Lg[0]
+      : "NFL";
+    console.log(playerLeague);
     switch (playerLeague) {
       case "NHL":
         setLeagueEnum(NHL);
@@ -75,6 +79,8 @@ const App = () => {
           setLeagueEnum(NFLRB);
         } else if (playersData[randomName].Pos[0] === "WR") {
           setLeagueEnum(NFLWR);
+        } else {
+          setLeagueEnum(NFLD);
         }
         break;
       case "MLB":
@@ -250,6 +256,7 @@ const App = () => {
     return "";
   };
 
+  console.log(leagueEnum);
   const filteredStats = leagueEnum
     ? Object.values(leagueEnum).filter((stat) => stat !== "Lg")
     : [];
@@ -258,6 +265,8 @@ const App = () => {
     setIsModalOpen(false);
   };
 
+  console.log(filteredStats);
+  console.log(playersData[randomPlayer]);
   return (
     <div className="container">
       {isModalOpen && (
