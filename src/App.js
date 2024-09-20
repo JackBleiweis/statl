@@ -59,7 +59,7 @@ const App = () => {
       Math.floor(utcDate / (24 * 60 * 60 * 1000)) % playerNames.length;
     const randomName = playerNames[dateIndex];
     setRandomPlayer(randomName);
-    setCareerLength(playersData[randomName].Lg.length);
+    setCareerLength(playersData[randomName].Age.length);
     const playerLeague = playersData[randomName].Lg[0];
     switch (playerLeague) {
       case "NHL":
