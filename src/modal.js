@@ -61,10 +61,44 @@ const Modal = ({
     const shareText = `I guessed the statl in ${guessCount} tries with ${
       hints.filter((hint) => hint !== undefined).length
     }/6 hints used! Play STATL at ${window.location.href}`;
-    navigator.clipboard
-      .writeText(shareText)
-      .then(() => alert("Results copied to clipboard!"))
-      .catch((err) => console.error("Failed to copy: ", err));
+
+    if (navigator.share) {
+      // Use Web Share API if available (works on mobile)
+      navigator
+        .share({
+          title: "STATL Results",
+          text: shareText,
+        })
+        .catch((err) => console.error("Error sharing:", err));
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      // Fallback to Clipboard API
+      navigator.clipboard
+        .writeText(shareText)
+        .then(() => alert("Results copied to clipboard!"))
+        .catch((err) => {
+          console.error("Failed to copy:", err);
+          fallbackCopyTextToClipboard(shareText);
+        });
+    } else {
+      // Fallback for older browsers
+      fallbackCopyTextToClipboard(shareText);
+    }
+  };
+
+  // Fallback function for copying text
+  const fallbackCopyTextToClipboard = (text) => {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      document.execCommand("copy");
+      alert("Results copied to clipboard!");
+    } catch (err) {
+      console.error("Fallback: Oops, unable to copy", err);
+    }
+    document.body.removeChild(textArea);
   };
 
   if (!isOpen) return null;
