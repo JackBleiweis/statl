@@ -58,13 +58,13 @@ const App = () => {
     const dateIndex =
       Math.floor(utcDate / (24 * 60 * 60 * 1000)) % playerNames.length;
     const randomName = playerNames[dateIndex];
-    console.log(dateIndex);
+
     setRandomPlayer(randomName);
     setCareerLength(playersData[randomName].Age.length);
     const playerLeague = playersData[randomName].Lg
       ? playersData[randomName].Lg[0]
       : "NFL";
-    console.log(playerLeague);
+
     switch (playerLeague) {
       case "NHL":
         setLeagueEnum(NHL);
@@ -256,7 +256,6 @@ const App = () => {
     return "";
   };
 
-  console.log(leagueEnum);
   const filteredStats = leagueEnum
     ? Object.values(leagueEnum).filter((stat) => stat !== "Lg")
     : [];
@@ -265,8 +264,6 @@ const App = () => {
     setIsModalOpen(false);
   };
 
-  console.log(filteredStats);
-  console.log(playersData[randomPlayer]);
   return (
     <div className="container">
       {isModalOpen && (
