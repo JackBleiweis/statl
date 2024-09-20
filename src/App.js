@@ -51,8 +51,15 @@ const App = () => {
 
   useEffect(() => {
     const playerNames = Object.keys(playersData);
-    const randomName =
-      playerNames[Math.floor(Math.random() * playerNames.length)];
+    const today = new Date();
+    const utcDate = Date.UTC(
+      today.getUTCFullYear(),
+      today.getUTCMonth(),
+      today.getUTCDate()
+    );
+    const dateIndex =
+      Math.floor(utcDate / (24 * 60 * 60 * 1000)) % playerNames.length;
+    const randomName = playerNames[dateIndex];
     setRandomPlayer(randomName);
     setCareerLength(playersData[randomName].Lg.length);
     const playerLeague = playersData[randomName].Lg[0];
@@ -80,29 +87,68 @@ const App = () => {
       default:
         console.error("Unknown league:", playerLeague);
     }
+
+    // Check if the game was already played today
+    const lastPlayedOn = localStorage.getItem("lastPlayedOn");
+    const todaysDate = new Date().toISOString().split("T")[0];
+    console.log("todayUpTop", todaysDate);
+    console.log("last", lastPlayedOn);
+
+    if (lastPlayedOn === todaysDate) {
+      setGameOver(true);
+    } else {
+      localStorage.setItem("lastPlayedOn", todaysDate);
+    }
   }, []);
 
   useEffect(() => {
-    console.log(gameOver);
     if (gameOver) {
       setIsModalOpen(true);
       // If the game is over, reveal all data cells
-      if (gameOver) {
-        setRevealedRow(null);
-        setRevealedColumn(null);
-        setCanRevealRow(false);
-        setCanRevealColumn(false);
-        setRevealAllNonSeasonTeam(true);
-        setRevealAll(true);
+      setRevealedRow(null);
+      setRevealedColumn(null);
+      setCanRevealRow(false);
+      setCanRevealColumn(false);
+      setRevealAllNonSeasonTeam(true);
+      setRevealAll(true);
+
+      // Update localStorage
+      const currentStreak = localStorage.getItem("currentStreak")
+        ? parseInt(localStorage.getItem("currentStreak"))
+        : 0;
+      const maxStreak = localStorage.getItem("maxStreak")
+        ? parseInt(localStorage.getItem("maxStreak"))
+        : 0;
+      const gamesPlayed = localStorage.getItem("statl_gamesPlayed")
+        ? parseInt(localStorage.getItem("statl_gamesPlayed"))
+        : 0;
+      const lastPlayedDate = localStorage.getItem("lastPlayedDate");
+      const today = new Date().toISOString().split("T")[0];
+      console.log("today", today);
+
+      // Only increment games played if it's a new day
+      if (lastPlayedDate !== today) {
+        localStorage.setItem("statl_gamesPlayed", (gamesPlayed + 1).toString());
+        localStorage.setItem("lastPlayedDate", today);
       }
+
+      if (gameResult === "win") {
+        const newCurrentStreak = currentStreak + 1;
+        localStorage.setItem("currentStreak", newCurrentStreak.toString());
+        if (newCurrentStreak > maxStreak) {
+          localStorage.setItem("maxStreak", newCurrentStreak.toString());
+        }
+      } else {
+        localStorage.setItem("currentStreak", "0");
+      }
+
+      localStorage.setItem("playedToday", "true");
     }
-    console.log("in here");
-  }, [gameOver]);
+  }, [gameOver, gameResult]);
 
   const handleGuessSubmit = (option) => {
     const newGuessCount = guessCount + 1;
     setGuessCount(newGuessCount);
-    console.log(option);
     if (option.toLowerCase() === randomPlayer.toLowerCase()) {
       setRevealedRow(null);
       setRevealedColumn(null);
@@ -113,12 +159,29 @@ const App = () => {
       setGameOver(true);
       setGameResult("win");
 
+      // Update localStorage for successful completion
+      const currentStreak = localStorage.getItem("currentStreak")
+        ? parseInt(localStorage.getItem("currentStreak"))
+        : 0;
+      const maxStreak = localStorage.getItem("maxStreak")
+        ? parseInt(localStorage.getItem("maxStreak"))
+        : 0;
+
+      const newCurrentStreak = currentStreak + 1;
+      localStorage.setItem("currentStreak", newCurrentStreak.toString());
+      if (newCurrentStreak > maxStreak) {
+        localStorage.setItem("maxStreak", newCurrentStreak.toString());
+      }
+
       return true;
     } else {
       if (newGuessCount >= 6) {
         setIsModalOpen(true);
         setGameOver(true);
         setGameResult("lose");
+
+        // Update localStorage for unsuccessful completion
+        localStorage.setItem("currentStreak", "0");
       }
     }
     setShowDropdown(false);

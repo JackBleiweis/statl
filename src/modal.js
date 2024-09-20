@@ -162,8 +162,8 @@ const Modal = ({
             Games Played: {localStorage?.statl_gamesPlayed || 1}
           </p>
           <div className="streak-container">
-            <p>Current Streak: {localStorage?.statl_currentStreak || 1}</p>
-            <p>Max Streak: {localStorage?.statl_maxStreak || 1}</p>
+            <p>Current Streak: {localStorage?.currentStreak || 1}</p>
+            <p>Max Streak: {localStorage?.maxStreak || 1}</p>
           </div>
         </div>
         <div className="share-section">
