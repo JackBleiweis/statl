@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import playersData from "./players.json";
-import { NHL, NBA, NFL, MLB } from "./leagueEnum";
+import { NHL, NBA, MLB, NFLQB, NFLRB, NFLWR } from "./leagueEnum";
 import Modal from "./modal";
 import "./styles.scss";
 
@@ -38,7 +38,6 @@ const App = () => {
     const randomName =
       playerNames[Math.floor(Math.random() * playerNames.length)];
     setRandomPlayer(randomName);
-    console.log(randomName);
     setCareerLength(playersData[randomName].Lg.length);
     const playerLeague = playersData[randomName].Lg[0];
     switch (playerLeague) {
@@ -49,9 +48,17 @@ const App = () => {
         setLeagueEnum(NBA);
         break;
       case "NFL":
-        setLeagueEnum(NFL);
+        if (playersData[randomName].Pos[0] === "QB") {
+          setLeagueEnum(NFLQB);
+        } else if (playersData[randomName].Pos[0] === "RB") {
+          setLeagueEnum(NFLRB);
+        } else if (playersData[randomName].Pos[0] === "WR") {
+          setLeagueEnum(NFLWR);
+        }
         break;
       case "MLB":
+      case "NL":
+      case "AL":
         setLeagueEnum(MLB);
         break;
       default:
@@ -88,7 +95,6 @@ const App = () => {
       }
     }
   };
-
   const handleRowClick = (index) => {
     if (canRevealRow && revealedRow === null) {
       setRevealedRow(index);
@@ -395,7 +401,9 @@ const App = () => {
                       key !== "Tm") ||
                     revealAll
                       ? key === "Season"
-                        ? playersData[randomPlayer][key][rowIndex].slice(2)
+                        ? playersData[randomPlayer][key]
+                          ? playersData[randomPlayer][key][rowIndex]
+                          : "N/A"
                         : playersData[randomPlayer][key][rowIndex]
                       : ""}
                   </td>
