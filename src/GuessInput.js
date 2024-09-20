@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import playersData from "./players.json";
+import { players } from "./constants";
 
 const InputContainer = styled.div`
   position: relative;
@@ -106,7 +106,7 @@ const GuessInput = ({
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isGiveUp, setIsGiveUp] = useState(false);
-  const options = Object.keys(playersData);
+  const options = players;
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
   const actionButtonRef = useRef(null);
