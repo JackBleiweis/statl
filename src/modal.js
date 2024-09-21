@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./modal.scss";
-// import silhouette from "./silhouette.png";
+import silhouette from "./silhouette.png";
 
 const Modal = ({
   player,
@@ -58,15 +58,57 @@ const Modal = ({
   }, [onClose]);
 
   const handleShare = () => {
-    const shareText = `I guessed the statl in ${guessCount} tries with ${
+    const grid = Array(ROW)
+      .fill()
+      .map(() => Array(COLUMN).fill("⬜"));
+
+    const [row, col, team1, team2, rightSide, leftSide] = hints;
+    if (row !== undefined) {
+      for (let i = 0; i < COLUMN; i++) grid[row][i] = "revealed";
+    }
+    if (col !== undefined) {
+      for (let i = 0; i < ROW; i++) grid[i][col] = "revealed";
+    }
+    if (team1 !== undefined) {
+      grid[team1][1] = "revealed";
+    }
+    if (team2 !== undefined) {
+      grid[team2][1] = "revealed";
+    }
+    if (rightSide !== undefined) {
+      for (let i = 0; i < ROW; i++) {
+        for (let j = 2; j < COLUMN; j++) {
+          grid[i][j] = "revealed";
+        }
+      }
+    }
+    if (leftSide !== undefined) {
+      for (let i = 0; i < ROW; i++) {
+        for (let j = 0; j < 2; j++) {
+          grid[i][j] = "revealed";
+        }
+      }
+    }
+    for (let i = 0; i < ROW; i++) {
+      for (let j = 0; j < COLUMN; j++) {
+        console.log(grid[i][j]);
+        if (grid[i][j] === "revealed") {
+          grid[i][j] = "🟦";
+        }
+      }
+    }
+    const gridString = grid.map((row) => row.join("")).join("\n");
+    const shareText = `I guessed the statl in ${guessCount} ${
+      guessCount > 1 ? "tries" : "try"
+    } with ${
       hints.filter((hint) => hint !== undefined).length
-    }/6 hints used! Play STATL at ${window.location.href}`;
+    }/6 hints used!\n\n${gridString}\n\nPlay statl at ${window.location.href}`;
 
     if (navigator.share) {
       // Use Web Share API if available (works on mobile)
       navigator
         .share({
-          title: "STATL Results",
+          title: "statl",
           text: shareText,
         })
         .catch((err) => console.error("Error sharing:", err));
@@ -166,7 +208,7 @@ const Modal = ({
           Next statl in: {timeUntilMidnight}
         </div>
         {renderGrid()}
-        {/* <div className="silhouettes">
+        <div className="silhouettes">
           <div>
             {[...Array(6)].map((_, index) => (
               <img
@@ -174,20 +216,14 @@ const Modal = ({
                 src={silhouette}
                 alt="Silhouette"
                 className={`silhouette-icon ${
-                  index < hints.filter((hint) => hint !== undefined).length
-                    ? "used"
-                    : ""
+                  index <= guessCount ? "used" : ""
                 }`}
               />
             ))}
           </div>
-          <span className="silhouette-count">
-            {hints.filter((hint) => hint !== undefined).length} / 6 hints used
-          </span>
-        </div> */}
+        </div>
         <div className="info-container">
           <span className="player-name">{player}</span>
-          <span className="guess-count">Attempts: {guessCount}</span>
         </div>
         <div className="stats">
           <span className="stats-title">Your Stats</span>
