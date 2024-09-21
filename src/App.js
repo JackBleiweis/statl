@@ -154,6 +154,14 @@ const App = () => {
     }
   }, [gameOver, gameResult, hintsUsed]);
 
+  useEffect(() => {
+    if (gameOver) {
+      setIsRulesModalOpen(false);
+    } else {
+      setIsRulesModalOpen(true);
+    }
+  }, [gameOver]);
+
   const handleGuessSubmit = (option) => {
     const newGuessCount = guessCount + 1;
     setGuessCount(newGuessCount);
