@@ -195,6 +195,7 @@ const GuessInput = ({
             .filter((option) =>
               option.toLowerCase().includes(guess.toLowerCase())
             )
+            .sort((a, b) => a.localeCompare(b))
             .map((option, index) => (
               <DropdownItem key={index} onClick={handleOptionClick}>
                 {option}

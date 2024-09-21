@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./modal.scss";
-import silhouette from "./silhouette.png";
+// import silhouette from "./silhouette.png";
 
 const Modal = ({
   player,
@@ -161,13 +161,12 @@ const Modal = ({
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content" ref={modalRef}>
+      <div className="modal-content" ref={modalRef} style={{ maxWidth: "85%" }}>
         <div className="countdown-timer">
-          Next STATL in: {timeUntilMidnight}
+          Next statl in: {timeUntilMidnight}
         </div>
-        <div className="modal-header"></div>
         {renderGrid()}
-        <div className="silhouettes">
+        {/* <div className="silhouettes">
           <div>
             {[...Array(6)].map((_, index) => (
               <img
@@ -185,19 +184,28 @@ const Modal = ({
           <span className="silhouette-count">
             {hints.filter((hint) => hint !== undefined).length} / 6 hints used
           </span>
-        </div>
+        </div> */}
         <div className="info-container">
           <span className="player-name">{player}</span>
-          <span className="guess-count">Guesses taken: {guessCount}</span>
+          <span className="guess-count">Attempts: {guessCount}</span>
         </div>
         <div className="stats">
           <span className="stats-title">Your Stats</span>
-          <p className="games-played">
-            Games Played: {localStorage?.statl_gamesPlayed || 1}
-          </p>
-          <div className="streak-container">
-            <p>Current Streak: {localStorage?.currentStreak || 1}</p>
-            <p>Max Streak: {localStorage?.maxStreak || 1}</p>
+          <div className="stats-row">
+            <span className="stats-label">Games Played:</span>
+            <span className="stats-value">
+              {localStorage?.statl_gamesPlayed || 1}
+            </span>
+          </div>
+          <div className="stats-row">
+            <span className="stats-label">Current Streak:</span>
+            <span className="stats-value">
+              {localStorage?.currentStreak || 1}
+            </span>
+          </div>
+          <div className="stats-row">
+            <span className="stats-label">Max Streak:</span>
+            <span className="stats-value">{localStorage?.maxStreak || 1}</span>
           </div>
         </div>
         <div className="share-section">

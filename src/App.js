@@ -7,6 +7,7 @@ import GuessInput from "./GuessInput";
 import logo from "./statl-logo.png"; // Import the logo
 
 import styled from "styled-components";
+import RulesModal from "./RulesModal";
 
 const LogoContainer = styled.div`
   display: flex;
@@ -46,6 +47,7 @@ const App = () => {
   const [careerLength, setCareerLength] = useState(0);
   const [hoveredCell, setHoveredCell] = useState(null);
   const [hoveredSeasonTeamColumn, setHoveredSeasonTeamColumn] = useState(null);
+  const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
 
   useEffect(() => {
     const playerNames = Object.keys(playersData);
@@ -265,7 +267,13 @@ const App = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container" style={{ marginBottom: "100px" }}>
+      {isRulesModalOpen && (
+        <RulesModal
+          isOpen={isRulesModalOpen}
+          onClose={() => setIsRulesModalOpen(false)}
+        />
+      )}
       {isModalOpen && (
         <Modal
           player={randomPlayer}
@@ -443,6 +451,22 @@ const App = () => {
                           : "",
                     }}
                   >
+                    {console.log(
+                      revealedRow === rowIndex ||
+                        revealedColumn === key ||
+                        (key === "Tm" &&
+                          revealedTeamCells.includes(rowIndex)) ||
+                        (revealAllNonSeasonTeam &&
+                          key !== "Season" &&
+                          key !== "Tm") ||
+                        revealAll
+                        ? key === "Season"
+                          ? playersData[randomPlayer][key]
+                            ? playersData[randomPlayer][key][rowIndex]
+                            : "N/A"
+                          : playersData[randomPlayer][key][rowIndex] || "DNP"
+                        : ""
+                    )}
                     {revealedRow === rowIndex ||
                     revealedColumn === key ||
                     (key === "Tm" && revealedTeamCells.includes(rowIndex)) ||
@@ -454,7 +478,7 @@ const App = () => {
                         ? playersData[randomPlayer][key]
                           ? playersData[randomPlayer][key][rowIndex]
                           : "N/A"
-                        : playersData[randomPlayer][key][rowIndex]
+                        : playersData[randomPlayer][key][rowIndex] || "DNP"
                       : ""}
                   </td>
                 ))}

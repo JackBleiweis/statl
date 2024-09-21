@@ -14,11 +14,12 @@
     position: relative;
     background-color: #282c34;
     color: white;
-    padding: 1rem 4rem;
+    padding: 1rem 2rem;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    min-height: 85vh;
-    max-height: 85vh;
+    min-height: 70vh;
+    max-height: 80vh;
+    max-width: 60%;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -36,7 +37,6 @@
 
     button {
       background-color: #4a90e2;
-      color: #282c34;
       border: none;
       padding: 0.5rem 1rem;
       font-size: 1rem;
@@ -45,6 +45,7 @@
       transition: background-color 0.3s ease;
       display: block;
       margin: 0 auto;
+      color: white;
 
       &:hover {
         background-color: #4a90e2;
@@ -58,7 +59,7 @@
       width: 100%;
       max-width: 300px;
       aspect-ratio: var(--columns) / var(--rows);
-      gap: 3px;
+      gap: 4px;
     }
 
     .hint-row {
@@ -121,6 +122,10 @@
     }
 
     .stats {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
       text-align: center;
 
       gap: 0.5rem;
@@ -131,8 +136,7 @@
         display: block;
       }
       .games-played {
-        font-size: 1.2rem;
-        margin: 0.5rem 0;
+        font-size: 1rem;
       }
 
       .streak-container {
@@ -146,7 +150,22 @@
       }
 
       p {
-        font-size: 1.1rem;
+        font-size: 1rem;
+        margin: 0 0 1px;
+      }
+
+      .stats-row {
+        width: 70%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .stats-value {
+        text-align: center;
+        min-width: 10px;
+        display: inline-block;
+        vertical-align: middle;
       }
     }
 
@@ -164,4 +183,5 @@
   background-color: #4a4a4c;
   padding: 0.5rem 1rem;
   border-radius: 5px;
+  margin-top: 10px;
 }
