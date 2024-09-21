@@ -11,6 +11,7 @@ import whiteLogo from "./white-stats.png";
 import styled from "styled-components";
 import RulesModal from "./RulesModal";
 import GauntletModeModal from "./gauntletModeModal";
+import ToggleButton from "./ToggleButton";
 
 const LogoContainer = styled.div`
   display: flex;
@@ -152,6 +153,25 @@ const App = () => {
   const [gauntletLeagueEnum, setGauntletLeagueEnum] = useState(null);
   const [gauntletCareerLength, setGauntletCareerLength] = useState(0);
 
+  // Add new state variable for the high score
+  const [gauntletHighScore, setGauntletHighScore] = useState(0);
+
+  // Add new state variables for daily mode
+  const [dailyModeState, setDailyModeState] = useState({
+    gameOver: false,
+    gameResult: "",
+    guessCount: 0,
+    revealedRow: null,
+    revealedColumn: null,
+    canRevealRow: true,
+    canRevealColumn: false,
+    revealedTeamCells: [],
+    selectionCount: 0,
+    revealAllNonSeasonTeam: false,
+    revealAll: false,
+    hintsUsed: [],
+  });
+
   useEffect(() => {
     const playerNames = Object.keys(playersData);
     const torontoTime = new Date().toLocaleString("en-US", {
@@ -262,6 +282,14 @@ const App = () => {
     }
   }, [gameOver, gameResult, hintsUsed]);
 
+  // Add a new useEffect hook to load the high score from localStorage
+  useEffect(() => {
+    const storedHighScore = localStorage.getItem("gauntletHighScore");
+    if (storedHighScore) {
+      setGauntletHighScore(parseInt(storedHighScore, 10));
+    }
+  }, []);
+
   // Modify toggleGauntletMode function
   const toggleGauntletMode = () => {
     if (!gauntletMode) {
@@ -270,11 +298,25 @@ const App = () => {
       setGauntletMode(true);
       setStrikes(3);
       setGauntletScore(0);
+
+      // Save current daily mode state
+      setDailyModeState({
+        gameOver,
+        gameResult,
+        guessCount,
+        revealedRow,
+        revealedColumn,
+        canRevealRow,
+        canRevealColumn,
+        revealedTeamCells,
+        selectionCount,
+        revealAllNonSeasonTeam,
+        revealAll,
+        hintsUsed,
+      });
+
       resetGauntletState();
       generateNewGauntletPlayer();
-      // Ensure game is not over when starting Gauntlet Mode
-      setGameOver(false);
-      setIsModalOpen(false);
     } else {
       // Exiting Gauntlet Mode
       setGauntletMode(false);
@@ -284,10 +326,22 @@ const App = () => {
       setGauntletCareerLength(0);
       setStrikes(3);
       setGauntletScore(0);
-      // Ensure game is not over when exiting Gauntlet Mode
-      setGameOver(false);
-      setIsModalOpen(false);
+
+      // Restore daily mode state
+      setGameOver(dailyModeState.gameOver);
+      setGameResult(dailyModeState.gameResult);
+      setGuessCount(dailyModeState.guessCount);
+      setRevealedRow(dailyModeState.revealedRow);
+      setRevealedColumn(dailyModeState.revealedColumn);
+      setCanRevealRow(dailyModeState.canRevealRow);
+      setCanRevealColumn(dailyModeState.canRevealColumn);
+      setRevealedTeamCells(dailyModeState.revealedTeamCells);
+      setSelectionCount(dailyModeState.selectionCount);
+      setRevealAllNonSeasonTeam(dailyModeState.revealAllNonSeasonTeam);
+      setRevealAll(dailyModeState.revealAll);
+      setHintsUsed(dailyModeState.hintsUsed);
     }
+    setIsModalOpen(false);
   };
 
   // New function to reset Gauntlet-specific state
@@ -352,13 +406,24 @@ const App = () => {
       if (option.toLowerCase() === currentPlayer.toLowerCase()) {
         setGauntletScore((prevScore) => prevScore + 1);
         generateNewGauntletPlayer();
+        return true;
       } else {
         setStrikes((prevStrikes) => {
           const newStrikes = prevStrikes - 1;
           if (newStrikes === 0) {
             setGameOver(true);
             setGameResult("lose");
-            setIsModalOpen(true);
+
+            setIsGauntletModalOpen(true);
+
+            // Check if the current score is higher than the high score
+            if (gauntletScore > gauntletHighScore) {
+              setGauntletHighScore(gauntletScore);
+              localStorage.setItem(
+                "gauntletHighScore",
+                gauntletScore.toString()
+              );
+            }
           }
           return newStrikes;
         });
@@ -390,6 +455,23 @@ const App = () => {
           localStorage.setItem("maxStreak", newCurrentStreak.toString());
         }
 
+        // Update dailyModeState
+        setDailyModeState((prevState) => ({
+          ...prevState,
+          gameOver: true,
+          gameResult: "win",
+          guessCount: newGuessCount,
+          revealedRow: null,
+          revealedColumn: null,
+          canRevealRow: false,
+          canRevealColumn: false,
+          revealedTeamCells: [],
+          selectionCount: 0,
+          revealAllNonSeasonTeam: true,
+          revealAll: true,
+          hintsUsed: hintsUsed,
+        }));
+
         return true;
       } else {
         if (newGuessCount >= 6) {
@@ -399,6 +481,23 @@ const App = () => {
 
           // Update localStorage for unsuccessful completion
           localStorage.setItem("currentStreak", "0");
+
+          // Update dailyModeState
+          setDailyModeState((prevState) => ({
+            ...prevState,
+            gameOver: true,
+            gameResult: "lose",
+            guessCount: newGuessCount,
+            revealedRow: null,
+            revealedColumn: null,
+            canRevealRow: false,
+            canRevealColumn: false,
+            revealedTeamCells: [],
+            selectionCount: 0,
+            revealAllNonSeasonTeam: true,
+            revealAll: true,
+            hintsUsed: hintsUsed,
+          }));
         }
       }
     }
@@ -413,6 +512,17 @@ const App = () => {
       setHoveredRow(null);
       setHintsUsed((prevHints) => [...prevHints, index]);
       setRevealedTeamCells([index]);
+
+      // Update dailyModeState
+      setDailyModeState((prevState) => ({
+        ...prevState,
+        revealedRow: index,
+        canRevealRow: false,
+        canRevealColumn: true,
+        selectionCount: prevState.selectionCount + 1,
+        hintsUsed: [...prevState.hintsUsed, index],
+        revealedTeamCells: [index],
+      }));
     }
   };
 
@@ -423,6 +533,15 @@ const App = () => {
       setSelectionCount((prevCount) => prevCount + 1);
 
       setHintsUsed((prevHints) => [...prevHints, index]);
+
+      // Update dailyModeState
+      setDailyModeState((prevState) => ({
+        ...prevState,
+        revealedColumn: key,
+        canRevealColumn: false,
+        selectionCount: prevState.selectionCount + 1,
+        hintsUsed: [...prevState.hintsUsed, index],
+      }));
     }
   };
 
@@ -436,6 +555,14 @@ const App = () => {
       setSelectionCount((prevCount) => prevCount + 1);
 
       setHintsUsed((prevHints) => [...prevHints, index]);
+
+      // Update dailyModeState
+      setDailyModeState((prevState) => ({
+        ...prevState,
+        revealedTeamCells: [...prevState.revealedTeamCells, index],
+        selectionCount: prevState.selectionCount + 1,
+        hintsUsed: [...prevState.hintsUsed, index],
+      }));
     }
   };
 
@@ -445,6 +572,14 @@ const App = () => {
       setSelectionCount((prevCount) => prevCount + 1);
 
       setHintsUsed((prevHints) => [...prevHints, 1]);
+
+      // Update dailyModeState
+      setDailyModeState((prevState) => ({
+        ...prevState,
+        revealAllNonSeasonTeam: true,
+        selectionCount: prevState.selectionCount + 1,
+        hintsUsed: [...prevState.hintsUsed, 1],
+      }));
     }
   };
 
@@ -454,6 +589,14 @@ const App = () => {
       setSelectionCount((prevCount) => prevCount + 1);
 
       setHintsUsed((prevHints) => [...prevHints, 1]);
+
+      // Update dailyModeState
+      setDailyModeState((prevState) => ({
+        ...prevState,
+        revealAll: true,
+        selectionCount: prevState.selectionCount + 1,
+        hintsUsed: [...prevState.hintsUsed, 1],
+      }));
     }
   };
 
@@ -491,11 +634,13 @@ const App = () => {
     setIsGauntletModalOpen(false);
   };
 
-  console.log(gauntletMode);
+  console.log(strikes);
   return (
     <div className="container" style={{ marginBottom: "100px" }}>
       <GauntletModeButton onClick={toggleGauntletMode} active={gauntletMode}>
-        {gauntletMode ? "Exit Gauntlet" : "Gauntlet Mode"}
+        <ToggleButton onClick={toggleGauntletMode} active={gauntletMode}>
+          {gauntletMode ? "Exit" : "Enter"} Gauntlet
+        </ToggleButton>
       </GauntletModeButton>
       {gauntletMode && (
         <div
@@ -506,7 +651,8 @@ const App = () => {
             color: "white",
           }}
         >
-          Score: {gauntletScore} | Strikes: {strikes}
+          Score: {gauntletScore} | Strikes: {strikes} | High Score:{" "}
+          {gauntletHighScore}
         </div>
       )}
       <ButtonContainer>
@@ -554,6 +700,7 @@ const App = () => {
           disabled={gameOver && !gauntletMode}
           guessCount={guessCount}
           setGiveUp={setGameOver}
+          gauntletMode={gauntletMode}
         />
       </div>
       {(gauntletMode ? gauntletPlayer : randomPlayer) &&
@@ -738,7 +885,13 @@ const App = () => {
         <GauntletModeModal
           isOpen={isGauntletModalOpen}
           onClose={closeGauntletModal}
-          onStart={closeGauntletModal}
+          onExit={() => {
+            closeGauntletModal();
+            toggleGauntletMode();
+          }}
+          strikes={strikes}
+          gauntletScore={gauntletScore}
+          gauntletHighScore={gauntletHighScore}
         />
       )}
     </div>

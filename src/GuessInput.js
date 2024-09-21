@@ -102,6 +102,7 @@ const GuessInput = ({
   disabled,
   guessCount,
   setGiveUp,
+  gauntletMode,
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isGiveUp, setIsGiveUp] = useState(false);
@@ -141,9 +142,11 @@ const GuessInput = ({
   };
 
   const handleOptionClick = (e) => {
-    console.log("this", e.target);
-    const isCorrect = handleGuessSubmit(e.target.textContent);
-    if (isCorrect) {
+    const selectedPlayer = e.target.textContent;
+    const isCorrect = handleGuessSubmit(selectedPlayer);
+    console.log("iscorrect " + isCorrect);
+
+    if ((gauntletMode && isCorrect) || (!gauntletMode && !isCorrect)) {
       e.target.style.backgroundColor = "#4CAF50";
       e.target.style.color = "#ffffff";
     } else {
@@ -164,6 +167,7 @@ const GuessInput = ({
     setIsGiveUp(!isGiveUp);
   };
 
+  console.log(gauntletMode);
   return (
     <InputContainer>
       <Input
