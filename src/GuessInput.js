@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import { players } from "./constants";
-
+import players from "./constants";
 const InputContainer = styled.div`
   position: relative;
   width: 300px;
