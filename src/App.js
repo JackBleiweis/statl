@@ -486,7 +486,8 @@ const App = () => {
                         ? playersData[randomPlayer][key]
                           ? playersData[randomPlayer][key][rowIndex]
                           : "N/A"
-                        : playersData[randomPlayer][key][rowIndex] || "DNP"
+                        : playersData[randomPlayer][key][rowIndex] ||
+                          (key !== "Tm" ? "0" : "DNP")
                       : ""}
                   </td>
                 ))}
