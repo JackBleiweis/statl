@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import players from "./constants";
 const InputContainer = styled.div`
   position: relative;
@@ -39,6 +39,18 @@ const GuessCounter = styled.div`
   border-radius: 4px;
   font-weight: bold;
   min-width: 30px;
+`;
+
+const strikeChangeAnimation = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.5); }
+  100% { transform: scale(1); }
+`;
+
+const AnimatedGuessCounter = styled(GuessCounter)`
+  &.animate {
+    animation: ${strikeChangeAnimation} 0.5s ease-in-out;
+  }
 `;
 
 const ActionButton = styled.button`
@@ -112,6 +124,7 @@ const GuessInput = ({
   const dropdownRef = useRef(null);
   const inputRef = useRef(null);
   const actionButtonRef = useRef(null);
+  const [animateStrike, setAnimateStrike] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -143,6 +156,14 @@ const GuessInput = ({
     setShowDropdown(false);
   }, [gauntletMode, setGuess]);
 
+  useEffect(() => {
+    if (strikesLeft !== undefined) {
+      setAnimateStrike(true);
+      const timer = setTimeout(() => setAnimateStrike(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [strikesLeft]);
+
   const handleGuessChange = (e) => {
     const newGuess = e.target.value;
     setGuess(newGuess);
@@ -159,6 +180,7 @@ const GuessInput = ({
     } else {
       e.target.style.backgroundColor = "#F44336";
       e.target.style.color = "#ffffff";
+      setGuess(""); // Reset the guess when the guess is incorrect
     }
     setTimeout(() => setShowDropdown(false), 500);
   };
@@ -190,31 +212,40 @@ const GuessInput = ({
           }
         }}
       />
-      <GuessCounter>
-        {!gauntletMode ? 6 - guessCount : strikesLeft}
-      </GuessCounter>
-      {!gauntletMode ? (
-        <ActionButton
-          ref={actionButtonRef}
-          isGiveUp={isGiveUp}
-          onClick={handleActionClick}
-          disabled={disabled}
-        >
-          {isGiveUp ? "Give Up" : "X"}
-        </ActionButton>
-      ) : (
-        <GuessCounter
-          style={{
-            backgroundColor: "#4CAF50",
-            color: "#ffffff",
 
-            width: "30px",
-            height: "30px",
-          }}
-        >
-          {gauntletScore}
-        </GuessCounter>
+      {!gauntletMode ? (
+        <>
+          <GuessCounter>{6 - guessCount}</GuessCounter>
+          <ActionButton
+            ref={actionButtonRef}
+            isGiveUp={isGiveUp}
+            onClick={handleActionClick}
+            disabled={disabled}
+          >
+            {isGiveUp ? "Give Up" : "X"}
+          </ActionButton>
+        </>
+      ) : (
+        <>
+          <GuessCounter
+            style={{
+              backgroundColor: "",
+              color: "#ffffff",
+              width: "30px",
+              height: "30px",
+            }}
+          >
+            {gauntletScore}
+          </GuessCounter>
+          <AnimatedGuessCounter
+            className={animateStrike ? "animate" : ""}
+            style={{ backgroundColor: "#F44336" }}
+          >
+            {strikesLeft}
+          </AnimatedGuessCounter>
+        </>
       )}
+
       {showDropdown && (
         <Dropdown ref={dropdownRef}>
           {options
