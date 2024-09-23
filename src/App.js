@@ -394,7 +394,6 @@ const App = () => {
     if (gauntletMode) {
       if (option.toLowerCase() === currentPlayer.toLowerCase()) {
         setGauntletScore((prevScore) => prevScore + 1);
-        console.log("are we getting here?");
         generateNewGauntletPlayer();
         return true;
       } else {
