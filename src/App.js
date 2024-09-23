@@ -135,12 +135,8 @@ const App = () => {
   const [strikes, setStrikes] = useState(3);
   const [gauntletScore, setGauntletScore] = useState(0);
   const [isGauntletModalOpen, setIsGauntletModalOpen] = useState(false);
-
-  // Add new state variables for Gauntlet Mode
   const [gauntletPlayer, setGauntletPlayer] = useState(null);
   const [gauntletLeagueEnum, setGauntletLeagueEnum] = useState(null);
-
-  // Add new state variable for the high score
   const [gauntletHighScore, setGauntletHighScore] = useState(0);
 
   // Add new state variables for daily mode
@@ -161,9 +157,6 @@ const App = () => {
 
   const [usedGauntletPlayers, setUsedGauntletPlayers] = useState([]);
 
-  console.log(gauntletPlayer);
-  console.log(playersData[gauntletPlayer]);
-  console.log(leagueEnum);
   useEffect(() => {
     const playerNames = Object.keys(playersData);
     const torontoTime = new Date().toLocaleString("en-US", {
@@ -395,18 +388,16 @@ const App = () => {
         return NHL;
       case "NBA":
         return NBA;
-      case "NFL":
-        if (player.Pos[0] === "QB") return NFLQB;
-        if (player.Pos[0] === "RB") return NFLRB;
-        if (player.Pos[0] === "WR") return NFLWR;
-        return NFLD;
+
       case "MLB":
       case "NL":
       case "AL":
         return MLB;
       default:
-        console.error("Unknown league:", playerLeague);
-        return null;
+        if (player.Pos[0] === "QB") return NFLQB;
+        if (player.Pos[0] === "RB") return NFLRB;
+        if (player.Pos[0] === "WR") return NFLWR;
+        return NFLD;
     }
   };
 
