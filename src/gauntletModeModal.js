@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import "./modal.scss";
 
 const GauntletModeModal = ({
@@ -8,25 +8,42 @@ const GauntletModeModal = ({
   strikes,
   gauntletScore,
   gauntletHighScore,
+  gauntletPlayer,
 }) => {
   const [isClosing, setIsClosing] = useState(false);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setIsClosing(true);
     setTimeout(() => {
       setIsClosing(false);
-      if (strikes === 3) {
-        onClose();
-      } else {
-        onExit();
-      }
+      onClose();
     }, 300);
-  };
+  }, [onClose]);
+
+  const handleExit = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      onExit();
+    }, 300);
+  }, [onExit]);
+
+  const handleOverlayClick = useCallback(
+    (e) => {
+      if (e.target === e.currentTarget) {
+        handleClose();
+      }
+    },
+    [handleClose]
+  );
 
   if (!isOpen) return null;
 
   return (
-    <div className={`modal-overlay ${isClosing ? "closing" : ""}`}>
+    <div
+      className={`modal-overlay ${isClosing ? "closing" : ""}`}
+      onClick={handleOverlayClick}
+    >
       <div
         className={`modal-content gauntlet-mode ${isClosing ? "closing" : ""}`}
       >
@@ -44,7 +61,7 @@ const GauntletModeModal = ({
         ) : (
           <div className="instructions-container">
             <h3>Game Over!</h3>
-            <span>You used all {3 - strikes} strikes.</span>
+            <span>The correct player was {gauntletPlayer}.</span>
             <span>Your stats: </span>
             <span>Score: {gauntletScore}</span>
             <span>High Score: {gauntletHighScore}</span>
@@ -52,7 +69,7 @@ const GauntletModeModal = ({
           </div>
         )}
         <div className="button-container">
-          <button onClick={handleClose}>
+          <button onClick={strikes === 3 ? handleClose : handleExit}>
             {strikes === 3 ? "Got it, let's play!" : "Exit Gauntlet Mode"}
           </button>
         </div>
