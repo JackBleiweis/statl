@@ -159,6 +159,8 @@ const App = () => {
     hintsUsed: [],
   });
 
+  const [usedGauntletPlayers, setUsedGauntletPlayers] = useState([]);
+
   useEffect(() => {
     const playerNames = Object.keys(playersData);
     const torontoTime = new Date().toLocaleString("en-US", {
@@ -189,7 +191,12 @@ const App = () => {
       case "NBA":
         setLeagueEnum(NBA);
         break;
-      case "NFL":
+      case "MLB":
+      case "NL":
+      case "AL":
+        setLeagueEnum(MLB);
+        break;
+      default:
         if (playersData[randomName].Pos[0] === "QB") {
           setLeagueEnum(NFLQB);
         } else if (playersData[randomName].Pos[0] === "RB") {
@@ -200,13 +207,6 @@ const App = () => {
           setLeagueEnum(NFLD);
         }
         break;
-      case "MLB":
-      case "NL":
-      case "AL":
-        setLeagueEnum(MLB);
-        break;
-      default:
-        console.error("Unknown league:", playerLeague);
     }
 
     // Check if the game was already played today
@@ -361,14 +361,28 @@ const App = () => {
     const playerNames = Object.keys(playersData);
     let randomName;
 
+    // Check if there is only one player left that hasn't been used
+    if (playerNames.length - usedGauntletPlayers.length === 1) {
+      alert("Congratulations! You have finished the gauntlet.");
+      setUsedGauntletPlayers([]);
+      return;
+    }
+
+    // Ensure we don't select a player that has already been used
     do {
       randomName = playerNames[Math.floor(Math.random() * playerNames.length)];
-    } while (randomName === gauntletPlayer);
+    } while (usedGauntletPlayers.includes(randomName));
 
     setGauntletPlayer(randomName);
     const newLeagueEnum = determineLeagueEnum(playersData[randomName]);
     setGauntletLeagueEnum(newLeagueEnum);
     resetGauntletState();
+
+    // Add the new player to the list of used players
+    setUsedGauntletPlayers((prevUsedPlayers) => [
+      ...prevUsedPlayers,
+      randomName,
+    ]);
   };
 
   const determineLeagueEnum = (player) => {
@@ -637,10 +651,18 @@ const App = () => {
   return (
     <div className="container" style={{ marginBottom: "100px" }}>
       <ButtonContainer>
-        <LogoButton onClick={handleOpenModal}>
-          <FaMedal />
-        </LogoButton>
-        <StyledButton onClick={handleOpenRulesModal}>
+        {!gauntletMode && (
+          <LogoButton onClick={handleOpenModal}>
+            <FaMedal />
+          </LogoButton>
+        )}
+        <StyledButton
+          onClick={
+            !gauntletMode
+              ? handleOpenRulesModal
+              : () => setIsGauntletModalOpen(true)
+          }
+        >
           <FaInfoCircle />
         </StyledButton>
       </ButtonContainer>
