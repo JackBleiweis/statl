@@ -359,8 +359,12 @@ const App = () => {
   // Modify generateNewPlayer to be Gauntlet-specific
   const generateNewGauntletPlayer = () => {
     const playerNames = Object.keys(playersData);
-    const randomName =
-      playerNames[Math.floor(Math.random() * playerNames.length)];
+    let randomName;
+
+    do {
+      randomName = playerNames[Math.floor(Math.random() * playerNames.length)];
+    } while (randomName === gauntletPlayer);
+
     setGauntletPlayer(randomName);
     const newLeagueEnum = determineLeagueEnum(playersData[randomName]);
     setGauntletLeagueEnum(newLeagueEnum);
@@ -607,9 +611,10 @@ const App = () => {
       )
     : [];
 
-  // Add this function to replace 'TRB' with 'REB'
+  // Add this function to replace 'TRB' with 'REB' and handle 'Yds' correctly
   const getDisplayHeader = (key) => {
-    return key === "TRB" ? "REB" : key;
+    if (key === "TRB") return "REB";
+    return key;
   };
 
   const handleCloseModal = () => {
