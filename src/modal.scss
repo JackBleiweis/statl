@@ -24,6 +24,17 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    animation: slideUp 0.3s ease-out;
+
+    &.gauntlet-mode {
+      max-height: 500px !important;
+      max-width: 400px !important;
+      min-height: 44vh !important;
+    }
+
+    &.closing {
+      animation: slideDown 0.3s ease-in forwards;
+    }
 
     h2 {
       font-size: 1.8rem;
@@ -54,6 +65,14 @@
       &:hover {
         background-color: #4a90e2;
       }
+    }
+
+    .instructions-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
     }
 
     .hint-grid {
@@ -188,6 +207,28 @@
   }
 }
 
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
 .countdown-timer {
   font-size: 1rem;
   font-weight: bold;
@@ -196,4 +237,17 @@
   padding: 0.5rem 1rem;
   border-radius: 5px;
   margin-top: 10px;
+}
+
+.modal-overlay.closing {
+  animation: fadeOut 0.3s ease-in forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }

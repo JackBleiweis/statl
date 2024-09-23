@@ -102,6 +102,9 @@ const GuessInput = ({
   disabled,
   guessCount,
   setGiveUp,
+  gauntletMode,
+  strikesLeft,
+  gauntletScore,
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isGiveUp, setIsGiveUp] = useState(false);
@@ -135,14 +138,21 @@ const GuessInput = ({
     };
   }, [isGiveUp]);
 
+  useEffect(() => {
+    setGuess("");
+    setShowDropdown(false);
+  }, [gauntletMode, setGuess]);
+
   const handleGuessChange = (e) => {
-    setGuess(e.target.value);
-    setShowDropdown(e.target.value.length > 0);
+    const newGuess = e.target.value;
+    setGuess(newGuess);
+    setShowDropdown(newGuess.length > 0);
   };
 
   const handleOptionClick = (e) => {
-    console.log("this", e.target);
-    const isCorrect = handleGuessSubmit(e.target.textContent);
+    const selectedPlayer = e.target.textContent;
+    const isCorrect = handleGuessSubmit(selectedPlayer);
+
     if (isCorrect) {
       e.target.style.backgroundColor = "#4CAF50";
       e.target.style.color = "#ffffff";
@@ -170,7 +180,7 @@ const GuessInput = ({
         ref={inputRef}
         disabled={disabled}
         type="text"
-        value={guess}
+        value={guess || ""}
         onChange={handleGuessChange}
         onFocus={() => setShowDropdown(true)}
         placeholder="Enter player name"
@@ -180,15 +190,31 @@ const GuessInput = ({
           }
         }}
       />
-      <GuessCounter>{6 - guessCount}</GuessCounter>
-      <ActionButton
-        ref={actionButtonRef}
-        isGiveUp={isGiveUp}
-        onClick={handleActionClick}
-        disabled={disabled}
-      >
-        {isGiveUp ? "Give Up" : "X"}
-      </ActionButton>
+      <GuessCounter>
+        {!gauntletMode ? 6 - guessCount : strikesLeft}
+      </GuessCounter>
+      {!gauntletMode ? (
+        <ActionButton
+          ref={actionButtonRef}
+          isGiveUp={isGiveUp}
+          onClick={handleActionClick}
+          disabled={disabled}
+        >
+          {isGiveUp ? "Give Up" : "X"}
+        </ActionButton>
+      ) : (
+        <GuessCounter
+          style={{
+            backgroundColor: "#4CAF50",
+            color: "#ffffff",
+
+            width: "30px",
+            height: "30px",
+          }}
+        >
+          {gauntletScore}
+        </GuessCounter>
+      )}
       {showDropdown && (
         <Dropdown ref={dropdownRef}>
           {options
