@@ -161,6 +161,8 @@ const App = () => {
 
   const [usedGauntletPlayers, setUsedGauntletPlayers] = useState([]);
 
+  console.log(gauntletPlayer);
+  console.log(playersData[gauntletPlayer]);
   useEffect(() => {
     const playerNames = Object.keys(playersData);
     const torontoTime = new Date().toLocaleString("en-US", {
@@ -714,6 +716,9 @@ const App = () => {
           gauntletScore={gauntletScore}
         />
       </div>
+      {gauntletMode && strikes === 0 && (
+        <span>The player was: {gauntletPlayer}</span>
+      )}
       {(gauntletMode ? gauntletPlayer : randomPlayer) &&
         (gauntletMode ? gauntletLeagueEnum : leagueEnum) &&
         playersData[gauntletMode ? gauntletPlayer : randomPlayer] &&
@@ -864,6 +869,14 @@ const App = () => {
                             ? "#6e6e6e"
                             : "",
                       }}
+                      data-tooltip={
+                        key === "Tm" &&
+                        playersData[
+                          gauntletMode ? gauntletPlayer : randomPlayer
+                        ][key][rowIndex] === "TOT"
+                          ? "Played on multiple teams in a season"
+                          : undefined
+                      }
                     >
                       {gauntletMode ||
                       revealedRow === rowIndex ||
@@ -903,6 +916,7 @@ const App = () => {
           strikes={strikes}
           gauntletScore={gauntletScore}
           gauntletHighScore={gauntletHighScore}
+          gauntletPlayer={gauntletPlayer}
         />
       )}
     </div>

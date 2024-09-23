@@ -107,6 +107,34 @@ const DropdownItem = styled.div`
   }
 `;
 
+const scoreChangeAnimation = keyframes`
+  0% { transform: scale(1); }
+  50% { transform: scale(1.5); }
+  100% { transform: scale(1); }
+`;
+
+const AnimatedScoreCounter = styled(GuessCounter)`
+  &.animate {
+    animation: ${scoreChangeAnimation} 0.5s ease-in-out;
+  }
+`;
+
+const TooltipContainer = styled.div`
+  position: absolute;
+  color: #fff;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 1000;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  max-height: 135px;
+  overflow-y: auto;
+  scrollbar-width: none;
+`;
+
 const GuessInput = ({
   guess,
   setGuess,
@@ -117,6 +145,7 @@ const GuessInput = ({
   gauntletMode,
   strikesLeft,
   gauntletScore,
+  setGauntletScore, // Add this prop
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isGiveUp, setIsGiveUp] = useState(false);
@@ -125,6 +154,9 @@ const GuessInput = ({
   const inputRef = useRef(null);
   const actionButtonRef = useRef(null);
   const [animateStrike, setAnimateStrike] = useState(false);
+  const [animateScore, setAnimateScore] = useState(false);
+  const [correctGuesses, setCorrectGuesses] = useState([]);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -154,6 +186,7 @@ const GuessInput = ({
   useEffect(() => {
     setGuess("");
     setShowDropdown(false);
+    setCorrectGuesses([]); // Reset correctGuesses when gauntletMode changes
   }, [gauntletMode, setGuess]);
 
   useEffect(() => {
@@ -163,6 +196,14 @@ const GuessInput = ({
       return () => clearTimeout(timer);
     }
   }, [strikesLeft]);
+
+  useEffect(() => {
+    if (gauntletScore > 0) {
+      setAnimateScore(true);
+      const timer = setTimeout(() => setAnimateScore(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [gauntletScore]);
 
   const handleGuessChange = (e) => {
     const newGuess = e.target.value;
@@ -177,6 +218,7 @@ const GuessInput = ({
     if (isCorrect) {
       e.target.style.backgroundColor = "#4CAF50";
       e.target.style.color = "#ffffff";
+      setCorrectGuesses((prevGuesses) => [selectedPlayer, ...prevGuesses]);
     } else {
       e.target.style.backgroundColor = "#F44336";
       e.target.style.color = "#ffffff";
@@ -227,16 +269,44 @@ const GuessInput = ({
         </>
       ) : (
         <>
-          <GuessCounter
+          <AnimatedScoreCounter
+            className={animateScore ? "animate" : ""}
             style={{
-              backgroundColor: "",
               color: "#ffffff",
               width: "30px",
               height: "30px",
+              backgroundColor: "#4CAF50",
+              position: "relative",
             }}
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
           >
             {gauntletScore}
-          </GuessCounter>
+            {showTooltip && correctGuesses.length > 50 && (
+              <TooltipContainer
+                style={{
+                  maxHeight: "100px",
+                  backgroundColor: "black",
+                  border: "5px solid #6e6e6e",
+                  borderRadius: "8px",
+                  padding: "10px",
+                  overflow: "auto",
+                }}
+              >
+                <ul
+                  style={{
+                    padding: 0,
+                    margin: 0,
+                    listStyleType: "none",
+                  }}
+                >
+                  {correctGuesses.map((guess, index) => (
+                    <li key={index}>{guess}</li>
+                  ))}
+                </ul>
+              </TooltipContainer>
+            )}
+          </AnimatedScoreCounter>
           <AnimatedGuessCounter
             className={animateStrike ? "animate" : ""}
             style={{ backgroundColor: "#F44336" }}
