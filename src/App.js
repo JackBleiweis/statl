@@ -288,6 +288,7 @@ const App = () => {
     }
   }, [gameOver, gameResult, hintsUsed]);
 
+
   // Add a new useEffect hook to load the high score from localStorage
   useEffect(() => {
     const storedHighScore = localStorage.getItem("gauntletHighScore");
@@ -295,6 +296,23 @@ const App = () => {
       setGauntletHighScore(parseInt(storedHighScore, 10));
     }
   }, []);
+
+  useEffect(() => {
+    if (gameOver) {
+      setIsRulesModalOpen(false);
+    } else {
+      setIsRulesModalOpen(true);
+    }
+  }, [gameOver]);
+
+  const handleGuessSubmit = (option) => {
+    const newGuessCount = guessCount + 1;
+    setGuessCount(newGuessCount);
+    if (option.toLowerCase() === randomPlayer.toLowerCase()) {
+      setRevealedRow(null);
+      setRevealedColumn(null);
+      setCanRevealRow(false);
+      setCanRevealColumn(false);
 
   // Modify toggleGauntletMode function
   const toggleGauntletMode = () => {

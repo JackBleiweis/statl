@@ -18,7 +18,7 @@
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     min-height: 70vh;
-    max-height: 80vh;
+    max-height: 70vh;
     max-width: 60%;
     overflow-y: auto;
     display: flex;
@@ -54,9 +54,13 @@
       border-radius: 5px;
       cursor: pointer;
       transition: background-color 0.3s ease;
-      display: block;
-      margin: 0 auto;
       color: white;
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      margin-top: 1rem;
 
       &:hover {
         background-color: #4a90e2;
@@ -72,6 +76,7 @@
     }
 
     .hint-grid {
+      margin: 15px 0px 0px;
       display: grid;
       grid-template-columns: repeat(var(--columns), 1fr);
       grid-template-rows: repeat(var(--rows), 1fr);
@@ -96,23 +101,29 @@
 
     .silhouettes {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       justify-content: center;
       align-items: center;
+      margin: 0px;
 
       img {
-        width: 25px;
-        height: 25px;
-        filter: brightness(0%);
+        width: 15px;
+        height: 15px;
+        margin: 0 5px;  // Add horizontal spacing between silhouettes
 
         &.used {
-          filter: invert(100%) brightness(1000%);
+          filter: invert(55%) sepia(95%) saturate(1731%) hue-rotate(194deg) brightness(98%) contrast(101%);
         }
       }
     }
 
+    @media screen and (min-width: 700px) {
+      .silhouettes {
+        margin-top: 15px;
+      }
+    }
+
     .silhouette-count {
-      margin-top: 0.5rem;
       font-size: 1.2rem;
     }
 
@@ -138,6 +149,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      margin: 10px 0;
     }
 
     .stats {
