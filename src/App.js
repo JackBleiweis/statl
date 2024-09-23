@@ -98,25 +98,6 @@ const LogoButton = styled(StyledButton)`
   }
 `;
 
-const GauntletModeButton = styled(StyledButton)`
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  color: white;
-  &:hover {
-    background-color: #3a7bc8;
-  }
-
-  @media (max-width: 700px) {
-    top: 5px;
-    left: 5px;
-    font-size: 12px;
-    padding: 4px 10px;
-    width: auto;
-    white-space: nowrap;
-  }
-`;
-
 const ToggleContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -157,7 +138,6 @@ const App = () => {
   // Add new state variables for Gauntlet Mode
   const [gauntletPlayer, setGauntletPlayer] = useState(null);
   const [gauntletLeagueEnum, setGauntletLeagueEnum] = useState(null);
-  const [gauntletCareerLength, setGauntletCareerLength] = useState(0);
 
   // Add new state variable for the high score
   const [gauntletHighScore, setGauntletHighScore] = useState(0);
@@ -337,7 +317,7 @@ const App = () => {
       // Reset Gauntlet-specific states
       setGauntletPlayer(null);
       setGauntletLeagueEnum(null);
-      setGauntletCareerLength(0);
+
       setStrikes(3);
       setGauntletScore(0);
 
@@ -381,7 +361,6 @@ const App = () => {
     const randomName =
       playerNames[Math.floor(Math.random() * playerNames.length)];
     setGauntletPlayer(randomName);
-    setGauntletCareerLength(playersData[randomName].Age.length);
     const newLeagueEnum = determineLeagueEnum(playersData[randomName]);
     setGauntletLeagueEnum(newLeagueEnum);
     resetGauntletState();
@@ -409,16 +388,13 @@ const App = () => {
     }
   };
 
-  const initializeDailyPlayer = () => {
-    // ... existing logic to set up the daily player ...
-  };
-
   // Modify handleGuessSubmit to use the correct player based on mode
   const handleGuessSubmit = (option) => {
     const currentPlayer = gauntletMode ? gauntletPlayer : randomPlayer;
     if (gauntletMode) {
       if (option.toLowerCase() === currentPlayer.toLowerCase()) {
         setGauntletScore((prevScore) => prevScore + 1);
+        console.log("are we getting here?");
         generateNewGauntletPlayer();
         return true;
       } else {
@@ -443,12 +419,9 @@ const App = () => {
         });
       }
     } else {
-      console.log("random player " + randomPlayer);
-      console.log("option " + option);
       const newGuessCount = guessCount + 1;
       setGuessCount(newGuessCount);
       if (option.toLowerCase() === randomPlayer.toLowerCase()) {
-        console.log("correct");
         setRevealedRow(null);
         setRevealedColumn(null);
         setCanRevealRow(false);
@@ -634,6 +607,11 @@ const App = () => {
       )
     : [];
 
+  // Add this function to replace 'TRB' with 'REB'
+  const getDisplayHeader = (key) => {
+    return key === "TRB" ? "REB" : key;
+  };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
@@ -727,7 +705,7 @@ const App = () => {
             <thead>
               <tr>
                 {filteredStats.map((key) => (
-                  <th key={key}>{key}</th>
+                  <th key={key}>{getDisplayHeader(key)}</th>
                 ))}
               </tr>
             </thead>

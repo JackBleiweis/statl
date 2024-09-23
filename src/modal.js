@@ -91,7 +91,6 @@ const Modal = ({
     }
     for (let i = 0; i < ROW; i++) {
       for (let j = 0; j < COLUMN; j++) {
-        console.log(grid[i][j]);
         if (grid[i][j] === "revealed") {
           grid[i][j] = "🟦";
         }
