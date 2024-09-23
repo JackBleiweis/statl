@@ -888,7 +888,7 @@ const App = () => {
                             : "N/A"
                           : playersData[
                               gauntletMode ? gauntletPlayer : randomPlayer
-                            ][key][rowIndex] || "DNP"
+                            ][key][rowIndex] || (key === "Tm" ? "DNP" : "0")
                         : ""}
                     </td>
                   ))}
