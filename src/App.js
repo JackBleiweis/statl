@@ -163,6 +163,7 @@ const App = () => {
 
   console.log(gauntletPlayer);
   console.log(playersData[gauntletPlayer]);
+  console.log(leagueEnum);
   useEffect(() => {
     const playerNames = Object.keys(playersData);
     const torontoTime = new Date().toLocaleString("en-US", {
