@@ -2032,6 +2032,7 @@ const players = [
   "Nick Robertson",
   "Carson Wentz",
   "John Wall",
+  "Calvin Johnson",
 ];
 
 export default players;

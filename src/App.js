@@ -102,7 +102,6 @@ const GauntletModeButton = styled(StyledButton)`
   position: fixed;
   top: 10px;
   left: 10px;
-  background-color: ${(props) => (props.active ? "#4a90e2" : "transparent")};
   color: white;
   &:hover {
     background-color: #3a7bc8;
@@ -116,6 +115,13 @@ const GauntletModeButton = styled(StyledButton)`
     width: auto;
     white-space: nowrap;
   }
+`;
+
+const ToggleContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 `;
 
 const App = () => {
@@ -429,9 +435,12 @@ const App = () => {
         });
       }
     } else {
+      console.log("random player " + randomPlayer);
+      console.log("option " + option);
       const newGuessCount = guessCount + 1;
       setGuessCount(newGuessCount);
       if (option.toLowerCase() === randomPlayer.toLowerCase()) {
+        console.log("correct");
         setRevealedRow(null);
         setRevealedColumn(null);
         setCanRevealRow(false);
@@ -634,27 +643,8 @@ const App = () => {
     setIsGauntletModalOpen(false);
   };
 
-  console.log(strikes);
   return (
     <div className="container" style={{ marginBottom: "100px" }}>
-      <GauntletModeButton onClick={toggleGauntletMode} active={gauntletMode}>
-        <ToggleButton onClick={toggleGauntletMode} active={gauntletMode}>
-          {gauntletMode ? "Exit" : "Enter"} Gauntlet
-        </ToggleButton>
-      </GauntletModeButton>
-      {gauntletMode && (
-        <div
-          style={{
-            position: "fixed",
-            top: "50px",
-            left: "10px",
-            color: "white",
-          }}
-        >
-          Score: {gauntletScore} | Strikes: {strikes} | High Score:{" "}
-          {gauntletHighScore}
-        </div>
-      )}
       <ButtonContainer>
         <LogoButton onClick={handleOpenModal}>
           <img src={whiteLogo} alt="Logo" />
@@ -690,8 +680,26 @@ const App = () => {
       )}
       <LogoContainer>
         <ResponsiveLogo src={logo} alt="Statl Logo" />
-        {gauntletMode && <GauntletModeText>Gauntlet Mode</GauntletModeText>}
+        <ToggleContainer>
+          <ToggleButton onClick={toggleGauntletMode} active={gauntletMode}>
+            {gauntletMode ? "Exit" : "Enter"} Gauntlet
+          </ToggleButton>
+          <GauntletModeText>Gauntlet Mode</GauntletModeText>
+        </ToggleContainer>
       </LogoContainer>
+      {gauntletMode && (
+        <div
+          style={{
+            position: "fixed",
+            top: "10px",
+            left: "10px",
+            color: "white",
+          }}
+        >
+          Score: {gauntletScore} | Strikes: {strikes} | High Score:{" "}
+          {gauntletHighScore}
+        </div>
+      )}
       <div className="sticky-header">
         <GuessInput
           guess={guess}

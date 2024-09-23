@@ -36,7 +36,8 @@ const GauntletModeModal = ({
             <span>Guess as many players correctly in a row.</span>
             <span>All stats will be shown from the beginning.</span>
             <span>You have 3 strikes.</span>
-            <span style={{ marginTop: "40px" }}>
+            <span>Leaving in the middle will not save your score.</span>
+            <span style={{ marginTop: "20px" }}>
               How many in a row can you guess correctly?
             </span>
           </div>

@@ -136,17 +136,22 @@ const GuessInput = ({
     };
   }, [isGiveUp]);
 
+  useEffect(() => {
+    setGuess("");
+    setShowDropdown(false);
+  }, [gauntletMode]);
+
   const handleGuessChange = (e) => {
-    setGuess(e.target.value);
-    setShowDropdown(e.target.value.length > 0);
+    const newGuess = e.target.value;
+    setGuess(newGuess);
+    setShowDropdown(newGuess.length > 0);
   };
 
   const handleOptionClick = (e) => {
     const selectedPlayer = e.target.textContent;
     const isCorrect = handleGuessSubmit(selectedPlayer);
-    console.log("iscorrect " + isCorrect);
 
-    if ((gauntletMode && isCorrect) || (!gauntletMode && !isCorrect)) {
+    if (isCorrect) {
       e.target.style.backgroundColor = "#4CAF50";
       e.target.style.color = "#ffffff";
     } else {
@@ -167,14 +172,13 @@ const GuessInput = ({
     setIsGiveUp(!isGiveUp);
   };
 
-  console.log(gauntletMode);
   return (
     <InputContainer>
       <Input
         ref={inputRef}
         disabled={disabled}
         type="text"
-        value={guess}
+        value={guess || ""}
         onChange={handleGuessChange}
         onFocus={() => setShowDropdown(true)}
         placeholder="Enter player name"
