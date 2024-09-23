@@ -5,8 +5,9 @@ import Modal from "./modal";
 import "./styles.scss";
 import GuessInput from "./GuessInput";
 import logo from "./statl-logo.png"; // Import the logo
-import { ReactComponent as QuestionMarkCircleIcon } from "./question-mark-circle.svg";
-import whiteLogo from "./white-stats.png";
+
+import { FaInfoCircle } from "react-icons/fa";
+import { FaMedal } from "react-icons/fa";
 
 import styled from "styled-components";
 import RulesModal from "./RulesModal";
@@ -45,8 +46,8 @@ const ButtonContainer = styled.div`
   background: transparent;
 
   @media (max-width: 700px) {
-    top: 5px;
-    right: 5px;
+    top: 10px;
+    right: 10px;
     gap: 5px;
   }
 `;
@@ -632,10 +633,10 @@ const App = () => {
     <div className="container" style={{ marginBottom: "100px" }}>
       <ButtonContainer>
         <LogoButton onClick={handleOpenModal}>
-          <img src={whiteLogo} alt="Logo" />
+          <FaMedal />
         </LogoButton>
         <StyledButton onClick={handleOpenRulesModal}>
-          <QuestionMarkCircleIcon />
+          <FaInfoCircle />
         </StyledButton>
       </ButtonContainer>
 
@@ -672,19 +673,7 @@ const App = () => {
           <GauntletModeText>Gauntlet Mode</GauntletModeText>
         </ToggleContainer>
       </LogoContainer>
-      {gauntletMode && (
-        <div
-          style={{
-            position: "fixed",
-            top: "10px",
-            left: "10px",
-            color: "white",
-          }}
-        >
-          Score: {gauntletScore} | Strikes: {strikes} | High Score:{" "}
-          {gauntletHighScore}
-        </div>
-      )}
+
       <div className="sticky-header">
         <GuessInput
           guess={guess}
@@ -694,6 +683,8 @@ const App = () => {
           guessCount={guessCount}
           setGiveUp={setGameOver}
           gauntletMode={gauntletMode}
+          strikesLeft={strikes}
+          gauntletScore={gauntletScore}
         />
       </div>
       {(gauntletMode ? gauntletPlayer : randomPlayer) &&

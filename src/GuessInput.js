@@ -103,6 +103,8 @@ const GuessInput = ({
   guessCount,
   setGiveUp,
   gauntletMode,
+  strikesLeft,
+  gauntletScore,
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isGiveUp, setIsGiveUp] = useState(false);
@@ -139,7 +141,7 @@ const GuessInput = ({
   useEffect(() => {
     setGuess("");
     setShowDropdown(false);
-  }, [gauntletMode]);
+  }, [gauntletMode, setGuess]);
 
   const handleGuessChange = (e) => {
     const newGuess = e.target.value;
@@ -188,15 +190,31 @@ const GuessInput = ({
           }
         }}
       />
-      <GuessCounter>{6 - guessCount}</GuessCounter>
-      <ActionButton
-        ref={actionButtonRef}
-        isGiveUp={isGiveUp}
-        onClick={handleActionClick}
-        disabled={disabled}
-      >
-        {isGiveUp ? "Give Up" : "X"}
-      </ActionButton>
+      <GuessCounter>
+        {!gauntletMode ? 6 - guessCount : strikesLeft}
+      </GuessCounter>
+      {!gauntletMode ? (
+        <ActionButton
+          ref={actionButtonRef}
+          isGiveUp={isGiveUp}
+          onClick={handleActionClick}
+          disabled={disabled}
+        >
+          {isGiveUp ? "Give Up" : "X"}
+        </ActionButton>
+      ) : (
+        <GuessCounter
+          style={{
+            backgroundColor: "#4CAF50",
+            color: "#ffffff",
+
+            width: "30px",
+            height: "30px",
+          }}
+        >
+          {gauntletScore}
+        </GuessCounter>
+      )}
       {showDropdown && (
         <Dropdown ref={dropdownRef}>
           {options
