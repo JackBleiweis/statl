@@ -37,7 +37,6 @@ export const NFLRB = {
   GAMES_PLAYED: "G",
   RUSHYDS: "RushYds",
   RUSHTD: "RushTD",
-  RECEPTION: "Rec",
   RECYDS: "RecYds",
   RECTD: "RecTD",
 };
