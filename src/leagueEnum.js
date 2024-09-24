@@ -35,11 +35,11 @@ export const NFLRB = {
   SEASON: "Season",
   TEAM: "Tm",
   GAMES_PLAYED: "G",
-  RUSHYDS: "RushYds",
-  RUSHTD: "RushTD",
+  RUSHYDS: "RuYd",
+  RUSHTD: "RuTD",
   RECEPTION: "Rec",
-  RECYDS: "RecYds",
-  RECTD: "RecTD",
+  RECYDS: "ReYd",
+  RECTD: "ReTD",
 };
 
 export const NFLWR = {
