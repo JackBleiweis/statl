@@ -1,4 +1,8 @@
 import React, { useState, useCallback } from "react";
+import NFLLogo from "./NFL-logo.png";
+import NBALogo from "./NBA-logo.png";
+import MLBLogo from "./MLB-logo.png";
+import NHLLogo from "./NHL-logo.png";
 import "./modal.scss";
 
 const GauntletModeModal = ({
@@ -9,6 +13,8 @@ const GauntletModeModal = ({
   gauntletScore,
   gauntletHighScore,
   gauntletPlayer,
+  selectedLeagues,
+  setSelectedLeagues,
 }) => {
   const [isClosing, setIsClosing] = useState(false);
 
@@ -37,6 +43,13 @@ const GauntletModeModal = ({
     [handleClose]
   );
 
+  const toggleLeague = (league) => {
+    setSelectedLeagues((prev) => ({
+      ...prev,
+      [league]: !prev[league],
+    }));
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -51,9 +64,55 @@ const GauntletModeModal = ({
           <div className="instructions-container">
             <h3>Welcome to Gauntlet Mode!</h3>
             <span>Guess as many players correctly in a row.</span>
-            <span>All stats will be shown from the beginning.</span>
             <span>You have 3 strikes.</span>
             <span>Leaving in the middle will not save your score.</span>
+            <span>Select your leagues:</span>
+            <div className="league-images">
+              <div className="league-icon-container">
+                <img
+                  src={NFLLogo}
+                  alt="NFL"
+                  className={`league-icon ${
+                    selectedLeagues.NFL ? "selected" : ""
+                  }`}
+                  onClick={() => toggleLeague("NFL")}
+                />
+                {selectedLeagues.NFL && <span className="checkmark">✓</span>}
+              </div>
+              <div className="league-icon-container">
+                <img
+                  src={NBALogo}
+                  alt="NBA"
+                  className={`league-icon ${
+                    selectedLeagues.NBA ? "selected" : ""
+                  }`}
+                  onClick={() => toggleLeague("NBA")}
+                />
+                {selectedLeagues.NBA && <span className="checkmark">✓</span>}
+              </div>
+              <div className="league-icon-container">
+                <img
+                  src={MLBLogo}
+                  alt="MLB"
+                  className={`league-icon ${
+                    selectedLeagues.MLB ? "selected" : ""
+                  }`}
+                  onClick={() => toggleLeague("MLB")}
+                />
+                {selectedLeagues.MLB && <span className="checkmark">✓</span>}
+              </div>
+              <div className="league-icon-container">
+                <img
+                  src={NHLLogo}
+                  alt="NHL"
+                  className={`league-icon ${
+                    selectedLeagues.NHL ? "selected" : ""
+                  }`}
+                  onClick={() => toggleLeague("NHL")}
+                />
+                {selectedLeagues.NHL && <span className="checkmark">✓</span>}
+              </div>
+            </div>
             <span style={{ marginTop: "20px" }}>
               How many in a row can you guess correctly?
             </span>

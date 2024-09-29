@@ -138,6 +138,12 @@ const App = () => {
   const [gauntletPlayer, setGauntletPlayer] = useState(null);
   const [gauntletLeagueEnum, setGauntletLeagueEnum] = useState(null);
   const [gauntletHighScore, setGauntletHighScore] = useState(0);
+  const [selectedLeagues, setSelectedLeagues] = useState({
+    NFL: true,
+    NBA: true,
+    MLB: true,
+    NHL: true,
+  });
 
   // Add new state variables for daily mode
   const [dailyModeState, setDailyModeState] = useState({
@@ -355,19 +361,45 @@ const App = () => {
   // Modify generateNewPlayer to be Gauntlet-specific
   const generateNewGauntletPlayer = () => {
     const playerNames = Object.keys(playersData);
-    let randomName;
+    let availablePlayers = [];
 
-    // Check if there is only one player left that hasn't been used
-    if (playerNames.length - usedGauntletPlayers.length === 1) {
-      alert("Congratulations! You have finished the gauntlet.");
-      setUsedGauntletPlayers([]);
+    // Check if there are any leagues selected
+    const anyLeagueSelected = Object.values(selectedLeagues).some(
+      (value) => value
+    );
+    if (!anyLeagueSelected) {
+      alert("Please select at least one league to play.");
       return;
     }
 
-    // Ensure we don't select a player that has already been used
-    do {
-      randomName = playerNames[Math.floor(Math.random() * playerNames.length)];
-    } while (usedGauntletPlayers.includes(randomName));
+    // Filter available players based on selected leagues and unused players
+    availablePlayers = playerNames.filter((name) => {
+      const playerLeague = playersData[name].Lg
+        ? playersData[name].Lg[0]
+        : "NFL";
+      const isLeagueSelected =
+        (playerLeague === "NHL" && selectedLeagues.NHL) ||
+        (playerLeague === "NBA" && selectedLeagues.NBA) ||
+        ((playerLeague === "MLB" ||
+          playerLeague === "NL" ||
+          playerLeague === "AL") &&
+          selectedLeagues.MLB) ||
+        (playerLeague === "NFL" && selectedLeagues.NFL);
+      return isLeagueSelected && !usedGauntletPlayers.includes(name);
+    });
+
+    if (availablePlayers.length === 0) {
+      setUsedGauntletPlayers([]);
+      alert(
+        "No more players available from the selected leagues. Resetting used players."
+      );
+      // Recursively call the function to select a new player after resetting
+      generateNewGauntletPlayer();
+      return;
+    }
+
+    const randomName =
+      availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
 
     setGauntletPlayer(randomName);
     const newLeagueEnum = determineLeagueEnum(playersData[randomName]);
@@ -381,6 +413,9 @@ const App = () => {
     ]);
   };
 
+  useEffect(() => {
+    generateNewGauntletPlayer();
+  }, [selectedLeagues]);
   const determineLeagueEnum = (player) => {
     const playerLeague = player.Lg ? player.Lg[0] : "NFL";
     switch (playerLeague) {
@@ -909,6 +944,8 @@ const App = () => {
           gauntletScore={gauntletScore}
           gauntletHighScore={gauntletHighScore}
           gauntletPlayer={gauntletPlayer}
+          selectedLeagues={selectedLeagues}
+          setSelectedLeagues={setSelectedLeagues}
         />
       )}
     </div>

@@ -252,3 +252,36 @@ td:not(
   opacity: 1;
   visibility: visible;
 }
+
+.league-images {
+  display: flex;
+  gap: 20px;
+  .league-icon-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 10px;
+    .league-icon {
+      cursor: pointer;
+      opacity: 0.15;
+      transition: opacity 0.2s ease;
+      height: 60px;
+      width: 60px;
+
+      &.selected {
+        opacity: 1;
+      }
+    }
+    .checkmark {
+      margin-top: 5px;
+      background-color: green;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+  }
+}
