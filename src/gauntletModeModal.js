@@ -62,7 +62,7 @@ const GauntletModeModal = ({
       >
         {strikes === 3 ? (
           <div className="instructions-container">
-            <h3>Welcome to Gauntlet Mode!</h3>
+            <h3 className="title">Welcome to Gauntlet Mode!</h3>
             <span>Guess as many players correctly in a row.</span>
             <span>You have 3 strikes.</span>
             <span>Leaving in the middle will not save your score.</span>
