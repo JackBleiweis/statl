@@ -73,6 +73,10 @@
       align-items: center;
       justify-content: center;
       gap: 1rem;
+
+      .title {
+        margin-top: 0px !important;
+      }
     }
 
     .hint-grid {
@@ -109,10 +113,11 @@
       img {
         width: 15px;
         height: 15px;
-        margin: 0 5px;  // Add horizontal spacing between silhouettes
+        margin: 0 5px; // Add horizontal spacing between silhouettes
 
         &.used {
-          filter: invert(55%) sepia(95%) saturate(1731%) hue-rotate(194deg) brightness(98%) contrast(101%);
+          filter: invert(55%) sepia(95%) saturate(1731%) hue-rotate(194deg)
+            brightness(98%) contrast(101%);
         }
       }
     }
