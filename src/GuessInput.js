@@ -157,6 +157,15 @@ const GuessInput = ({
   const [animateScore, setAnimateScore] = useState(false);
   const [correctGuesses, setCorrectGuesses] = useState([]);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [animateGuessCount, setAnimateGuessCount] = useState(false);
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleGuessSubmit(guess);
+    } else if (e.key === "Escape" && showDropdown) {
+      setShowDropdown(false);
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -205,6 +214,14 @@ const GuessInput = ({
     }
   }, [gauntletScore]);
 
+  useEffect(() => {
+    if (guessCount > 0) {
+      setAnimateGuessCount(true);
+      const timer = setTimeout(() => setAnimateGuessCount(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [guessCount]);
+
   const handleGuessChange = (e) => {
     const newGuess = e.target.value;
     setGuess(newGuess);
@@ -216,15 +233,17 @@ const GuessInput = ({
     const isCorrect = handleGuessSubmit(selectedPlayer);
 
     if (isCorrect) {
-      e.target.style.backgroundColor = "#4CAF50";
-      e.target.style.color = "#ffffff";
+      // e.target.style.backgroundColor = "#4CAF50";
+      // e.target.style.color = "#ffffff";
       setCorrectGuesses((prevGuesses) => [selectedPlayer, ...prevGuesses]);
+      setGuess("");
     } else {
-      e.target.style.backgroundColor = "#F44336";
-      e.target.style.color = "#ffffff";
+      // e.target.style.backgroundColor = "#F44336";
+      // e.target.style.color = "#ffffff";
       setGuess(""); // Reset the guess when the guess is incorrect
     }
-    setTimeout(() => setShowDropdown(false), 500);
+
+    setShowDropdown(false);
   };
 
   const handleActionClick = () => {
@@ -248,16 +267,14 @@ const GuessInput = ({
         onChange={handleGuessChange}
         onFocus={() => setShowDropdown(true)}
         placeholder="Enter player name"
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            handleGuessSubmit(guess);
-          }
-        }}
+        onKeyDown={handleKeyDown}
       />
 
       {!gauntletMode ? (
         <>
-          <GuessCounter>{6 - guessCount}</GuessCounter>
+          <AnimatedGuessCounter className={animateGuessCount ? "animate" : ""}>
+            {6 - guessCount}
+          </AnimatedGuessCounter>
           <ActionButton
             ref={actionButtonRef}
             isGiveUp={isGiveUp}
