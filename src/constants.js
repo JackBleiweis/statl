@@ -2033,6 +2033,12 @@ const players = [
   "Carson Wentz",
   "John Wall",
   "Calvin Johnson",
+  "Chase Claypool",
+  "Ondrej Kase",
+  "Nils Lundkvist",
+  "Josh Norris",
+  "Sean Monahan",
+  "Kailer Yamamoto",
 ];
 
 export default players;
