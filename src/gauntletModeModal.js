@@ -117,9 +117,7 @@ const GauntletModeModal = ({
                 {selectedLeagues.NHL && <span className="checkmark">✓</span>}
               </div>
             </div>
-            <span style={{ marginTop: "20px" }}>
-              How many in a row can you guess correctly?
-            </span>
+            <span>How many in a row can you guess correctly?</span>
           </div>
         ) : (
           <div className="instructions-container">

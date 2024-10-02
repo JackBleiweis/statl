@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, css } from "styled-components";
 import players from "./constants";
 const InputContainer = styled.div`
   position: relative;
@@ -21,10 +21,17 @@ const Input = styled.input`
   font-weight: bold;
   margin: 0 0; // Add this to center vertically
 
-  &:focus {
-    outline: none;
-    border-color: #4a90e2;
-  }
+  ${(props) =>
+    props.animate &&
+    css`
+      animation: ${props.isCorrect
+          ? pulseAnimation("rgba(76, 175, 80, 0.7)")
+          : pulseAnimation("rgba(244, 67, 54, 0.7)")}
+        1s;
+      border-color: ${props.isCorrect ? "#4CAF50" : "#F44336"};
+    `}
+
+  transition: border-color 0.3s ease;
 `;
 
 const GuessCounter = styled.div`
@@ -135,6 +142,12 @@ const TooltipContainer = styled.div`
   scrollbar-width: none;
 `;
 
+const pulseAnimation = (color) => keyframes`
+  0% { box-shadow: 0 0 0 0 ${color}; }
+  70% { box-shadow: 0 0 0 10px rgba(255, 255, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+`;
+
 const GuessInput = ({
   guess,
   setGuess,
@@ -158,6 +171,10 @@ const GuessInput = ({
   const [correctGuesses, setCorrectGuesses] = useState([]);
   const [showTooltip, setShowTooltip] = useState(false);
   const [animateGuessCount, setAnimateGuessCount] = useState(false);
+  const [inputAnimation, setInputAnimation] = useState({
+    animate: false,
+    isCorrect: false,
+  });
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
@@ -232,14 +249,16 @@ const GuessInput = ({
     const selectedPlayer = e.target.textContent;
     const isCorrect = handleGuessSubmit(selectedPlayer);
 
+    setInputAnimation({ animate: true, isCorrect });
+    setTimeout(
+      () => setInputAnimation({ animate: false, isCorrect: false }),
+      1000
+    );
+
     if (isCorrect) {
-      // e.target.style.backgroundColor = "#4CAF50";
-      // e.target.style.color = "#ffffff";
       setCorrectGuesses((prevGuesses) => [selectedPlayer, ...prevGuesses]);
       setGuess("");
     } else {
-      // e.target.style.backgroundColor = "#F44336";
-      // e.target.style.color = "#ffffff";
       setGuess(""); // Reset the guess when the guess is incorrect
     }
 
@@ -268,6 +287,8 @@ const GuessInput = ({
         onFocus={() => setShowDropdown(true)}
         placeholder="Enter player name"
         onKeyDown={handleKeyDown}
+        animate={inputAnimation.animate}
+        isCorrect={inputAnimation.isCorrect}
       />
 
       {!gauntletMode ? (
