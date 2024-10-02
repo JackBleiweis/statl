@@ -258,12 +258,12 @@ const App = () => {
       const today = new Date().toISOString().split("T")[0];
 
       // Only increment games played if it's a new day
-
       if (lastPlayedDate !== today) {
         localStorage.setItem("statl_gamesPlayed", (gamesPlayed + 1).toString());
         localStorage.setItem("lastPlayedDate", today);
       }
 
+      //Add to streak or reset it if the game is lost
       if (gameResult === "win") {
         const newCurrentStreak = currentStreak + 1;
         localStorage.setItem("currentStreak", newCurrentStreak.toString());
@@ -352,7 +352,6 @@ const App = () => {
   // New function to reset Gauntlet-specific state
   const resetGauntletState = () => {
     setGuessCount(0);
-    setHintsUsed([]);
     setGameResult("");
     setRevealedRow(null);
     setRevealedColumn(null);
