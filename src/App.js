@@ -672,7 +672,6 @@ const App = () => {
     setIsGauntletModalOpen(false);
   };
 
-  // console.log(randomPlayer);
   return (
     <div className="container" style={{ marginBottom: "100px" }}>
       <ButtonContainer>
