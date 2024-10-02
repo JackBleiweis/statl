@@ -44,14 +44,18 @@ const GauntletModeModal = ({
   );
 
   const toggleLeague = (league) => {
-    setSelectedLeagues((prev) => ({
-      ...prev,
-      [league]: !prev[league],
-    }));
+    setSelectedLeagues((prev) => {
+      const newState = { ...prev, [league]: !prev[league] };
+      const anyLeagueSelected = Object.values(newState).some((value) => value);
+      if (!anyLeagueSelected) {
+        alert("You have to select at least one league!!!");
+        return prev; // If toggling would result in no leagues selected, return the previous state
+      }
+      return newState;
+    });
   };
 
   if (!isOpen) return null;
-
   return (
     <div
       className={`modal-overlay ${isClosing ? "closing" : ""}`}
@@ -60,7 +64,7 @@ const GauntletModeModal = ({
       <div
         className={`modal-content gauntlet-mode ${isClosing ? "closing" : ""}`}
       >
-        {strikes === 3 ? (
+        {strikes !== 0 ? (
           <div className="instructions-container">
             <h3 className="title">Welcome to Gauntlet Mode!</h3>
             <span>Guess as many players correctly in a row.</span>
@@ -129,7 +133,7 @@ const GauntletModeModal = ({
         )}
         <div className="button-container">
           <button onClick={strikes === 3 ? handleClose : handleExit}>
-            {strikes === 3 ? "Got it, let's play!" : "Exit Gauntlet Mode"}
+            {strikes !== 0 ? "Got it, let's play!" : "Exit Gauntlet Mode"}
           </button>
         </div>
       </div>

@@ -25,6 +25,7 @@
     flex-direction: column;
     justify-content: space-between;
     animation: slideUp 0.3s ease-out;
+    scrollbar-width: 0 !important;
 
     &.gauntlet-mode {
       max-height: 500px !important;
@@ -242,6 +243,7 @@
   padding: 0.5rem 1rem;
   border-radius: 5px;
   margin-top: 10px;
+  min-width: 210px;
 }
 
 .modal-overlay.closing {

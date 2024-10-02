@@ -107,30 +107,37 @@ const ToggleContainer = styled.div`
 `;
 
 const App = () => {
+  //Player and game states
   const [randomPlayer, setRandomPlayer] = useState(null);
+  const [leagueEnum, setLeagueEnum] = useState(null);
+  const [careerLength, setCareerLength] = useState(0);
   const [guess, setGuess] = useState("");
+  const [guessCount, setGuessCount] = useState(0);
+  const [selectionCount, setSelectionCount] = useState(0);
+  const [hintsUsed, setHintsUsed] = useState([]);
+
+  //Reveal states
   const [revealedRow, setRevealedRow] = useState(null);
   const [revealedColumn, setRevealedColumn] = useState(null);
   const [canRevealRow, setCanRevealRow] = useState(true);
   const [canRevealColumn, setCanRevealColumn] = useState(false);
-  const [guessCount, setGuessCount] = useState(0);
   const [revealedTeamCells, setRevealedTeamCells] = useState([]);
-  const [selectionCount, setSelectionCount] = useState(0);
   const [revealAllNonSeasonTeam, setRevealAllNonSeasonTeam] = useState(false);
   const [revealAll, setRevealAll] = useState(false);
+
+  //Hover states
   const [hoveredRow, setHoveredRow] = useState(null);
   const [hoveredColumn, setHoveredColumn] = useState(null);
-  const [hintsUsed, setHintsUsed] = useState([]);
+  const [hoveredCell, setHoveredCell] = useState(null);
+  const [hoveredSeasonTeamColumn, setHoveredSeasonTeamColumn] = useState(null);
+
+  //Game states and modal states
   const [gameOver, setGameOver] = useState(false);
   const [gameResult, setGameResult] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const [leagueEnum, setLeagueEnum] = useState(null);
-  const [careerLength, setCareerLength] = useState(0);
-  const [hoveredCell, setHoveredCell] = useState(null);
-  const [hoveredSeasonTeamColumn, setHoveredSeasonTeamColumn] = useState(null);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
 
+  //Gauntlet Mode states
   const [gauntletMode, setGauntletMode] = useState(false);
   const [strikes, setStrikes] = useState(3);
   const [gauntletScore, setGauntletScore] = useState(0);
@@ -138,6 +145,7 @@ const App = () => {
   const [gauntletPlayer, setGauntletPlayer] = useState(null);
   const [gauntletLeagueEnum, setGauntletLeagueEnum] = useState(null);
   const [gauntletHighScore, setGauntletHighScore] = useState(0);
+  const [usedGauntletPlayers, setUsedGauntletPlayers] = useState([]);
   const [selectedLeagues, setSelectedLeagues] = useState({
     NFL: true,
     NBA: true,
@@ -161,8 +169,7 @@ const App = () => {
     hintsUsed: [],
   });
 
-  const [usedGauntletPlayers, setUsedGauntletPlayers] = useState([]);
-
+  // Sets all the information for the daily game
   useEffect(() => {
     const playerNames = Object.keys(playersData);
     const torontoTime = new Date().toLocaleString("en-US", {
@@ -225,6 +232,7 @@ const App = () => {
     }
   }, []);
 
+  // Opens the modal when the game is over
   useEffect(() => {
     if (gameOver) {
       setIsModalOpen(true);
@@ -325,7 +333,7 @@ const App = () => {
       setGauntletScore(0);
 
       // Restore daily mode state
-      setGameOver(dailyModeState.gameOver);
+      // setGameOver(dailyModeState.gameOver);
       setGameResult(dailyModeState.gameResult);
       setGuessCount(dailyModeState.guessCount);
       setRevealedRow(dailyModeState.revealedRow);
@@ -354,7 +362,6 @@ const App = () => {
     setSelectionCount(0);
     setRevealAllNonSeasonTeam(false);
     setRevealAll(false);
-    setGameOver(false);
     setIsModalOpen(false);
   };
 
@@ -363,16 +370,7 @@ const App = () => {
     const playerNames = Object.keys(playersData);
     let availablePlayers = [];
 
-    // Check if there are any leagues selected
-    const anyLeagueSelected = Object.values(selectedLeagues).some(
-      (value) => value
-    );
-    if (!anyLeagueSelected) {
-      alert("Please select at least one league to play.");
-      return;
-    }
-
-    // Filter available players based on selected leagues and unused players
+    // Filter available players based on selected leagues
     availablePlayers = playerNames.filter((name) => {
       const playerLeague = playersData[name].Lg
         ? playersData[name].Lg[0]
@@ -390,12 +388,9 @@ const App = () => {
 
     if (availablePlayers.length === 0) {
       setUsedGauntletPlayers([]);
-      alert(
-        "No more players available from the selected leagues. Resetting used players."
-      );
-      // Recursively call the function to select a new player after resetting
-      generateNewGauntletPlayer();
-      return;
+      alert("No more players available from the selected leagues.");
+      // end the gauntlet game
+      setIsGauntletModalOpen(true);
     }
 
     const randomName =
@@ -677,11 +672,18 @@ const App = () => {
     setIsGauntletModalOpen(false);
   };
 
+  // console.log(randomPlayer);
   return (
     <div className="container" style={{ marginBottom: "100px" }}>
       <ButtonContainer>
         {!gauntletMode && (
-          <LogoButton onClick={handleOpenModal}>
+          <LogoButton
+            onClick={
+              gameOver
+                ? handleOpenModal
+                : () => alert("Stats can be viewed once the game is over")
+            }
+          >
             <FaMedal />
           </LogoButton>
         )}
@@ -765,13 +767,22 @@ const App = () => {
                 <tr
                   key={rowIndex}
                   onClick={() =>
-                    !gameOver && canRevealRow && handleRowClick(rowIndex)
+                    !gameOver &&
+                    canRevealRow &&
+                    !gauntletMode &&
+                    handleRowClick(rowIndex)
                   }
                   onMouseEnter={() =>
-                    !gameOver && canRevealRow && setHoveredRow(rowIndex)
+                    !gameOver &&
+                    canRevealRow &&
+                    !gauntletMode &&
+                    setHoveredRow(rowIndex)
                   }
                   onMouseLeave={() =>
-                    !gameOver && canRevealRow && setHoveredRow(null)
+                    !gameOver &&
+                    canRevealRow &&
+                    !gauntletMode &&
+                    setHoveredRow(null)
                   }
                 >
                   {filteredStats.map((key, colIndex) => (
