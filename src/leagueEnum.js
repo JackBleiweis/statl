@@ -44,7 +44,7 @@ export const NFLRB = {
 export const NFLWR = {
   SEASON: "Season",
   TEAM: "Tm",
-  GAMES_PLAYED: "GP",
+  GAMES_PLAYED: "G",
   TARGETS: "Tgt",
   RECEPTIONS: "Rec",
   YARDS: "Yds",

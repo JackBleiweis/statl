@@ -397,6 +397,7 @@ const App = () => {
       availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
 
     setGauntletPlayer(randomName);
+
     const newLeagueEnum = determineLeagueEnum(playersData[randomName]);
     setGauntletLeagueEnum(newLeagueEnum);
     resetGauntletState();
@@ -443,7 +444,6 @@ const App = () => {
         setStrikes((prevStrikes) => {
           const newStrikes = prevStrikes - 1;
           if (newStrikes === 0) {
-            setGameOver(true);
             setGameResult("lose");
 
             setIsGauntletModalOpen(true);
