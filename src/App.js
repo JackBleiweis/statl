@@ -385,6 +385,7 @@ const App = () => {
       return isLeagueSelected && !usedGauntletPlayers.includes(name);
     });
 
+    //If no more elligble players for the gauntlet
     if (availablePlayers.length === 0) {
       setUsedGauntletPlayers([]);
       alert("No more players available from the selected leagues.");
@@ -392,6 +393,7 @@ const App = () => {
       setIsGauntletModalOpen(true);
     }
 
+    //Select a random player from the available players
     const randomName =
       availablePlayers[Math.floor(Math.random() * availablePlayers.length)];
 
@@ -408,9 +410,12 @@ const App = () => {
     ]);
   };
 
+  //Ensures the gauntlet player is in a selected league
   useEffect(() => {
     generateNewGauntletPlayer();
   }, [selectedLeagues]);
+
+  //Determines the league of the player
   const determineLeagueEnum = (player) => {
     const playerLeague = player.Lg ? player.Lg[0] : "NFL";
     switch (playerLeague) {
@@ -444,9 +449,7 @@ const App = () => {
           const newStrikes = prevStrikes - 1;
           if (newStrikes === 0) {
             setGameResult("lose");
-
             setIsGauntletModalOpen(true);
-
             // Check if the current score is higher than the high score
             if (gauntletScore > gauntletHighScore) {
               setGauntletHighScore(gauntletScore);
@@ -533,6 +536,8 @@ const App = () => {
       }
     }
   };
+
+  // TODO: Clean up for clarity, can use HINT ORDER
   const handleRowClick = (index) => {
     if (canRevealRow && revealedRow === null) {
       setRevealedRow(index);
@@ -642,18 +647,21 @@ const App = () => {
     return "";
   };
 
+  // TODO: Replace
   const filteredStats = (gauntletMode ? gauntletLeagueEnum : leagueEnum)
     ? Object.values(gauntletMode ? gauntletLeagueEnum : leagueEnum).filter(
         (stat) => stat !== "Lg"
       )
     : [];
 
+  // TODO: Fix YDS issue w/ NFL (AI issue, switch to script)
   // Add this function to replace 'TRB' with 'REB' and handle 'Yds' correctly
   const getDisplayHeader = (key) => {
     if (key === "TRB") return "REB";
     return key;
   };
 
+  // TODO: Consolodate?
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
