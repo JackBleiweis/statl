@@ -69,55 +69,62 @@ const GauntletModeModal = ({
             <h3 className="title">Welcome to Gauntlet Mode!</h3>
             <span>Guess as many players correctly in a row.</span>
             <span>You have 3 strikes.</span>
-            <span>Leaving in the middle will not save your score.</span>
+            <span>You get one skip per game.</span>
             <span>Select your leagues:</span>
             <div className="league-images">
-              <div className="league-icon-container">
+              <div
+                className="league-icon-container"
+                onClick={() => toggleLeague("NFL")}
+              >
                 <img
                   src={NFLLogo}
                   alt="NFL"
                   className={`league-icon ${
                     selectedLeagues.NFL ? "selected" : ""
                   }`}
-                  onClick={() => toggleLeague("NFL")}
                 />
                 {selectedLeagues.NFL && <span className="checkmark">✓</span>}
               </div>
-              <div className="league-icon-container">
+              <div
+                className="league-icon-container"
+                onClick={() => toggleLeague("NBA")}
+              >
                 <img
                   src={NBALogo}
                   alt="NBA"
                   className={`league-icon ${
                     selectedLeagues.NBA ? "selected" : ""
                   }`}
-                  onClick={() => toggleLeague("NBA")}
                 />
                 {selectedLeagues.NBA && <span className="checkmark">✓</span>}
               </div>
-              <div className="league-icon-container">
+              <div
+                className="league-icon-container"
+                onClick={() => toggleLeague("MLB")}
+              >
                 <img
                   src={MLBLogo}
                   alt="MLB"
                   className={`league-icon ${
                     selectedLeagues.MLB ? "selected" : ""
                   }`}
-                  onClick={() => toggleLeague("MLB")}
                 />
                 {selectedLeagues.MLB && <span className="checkmark">✓</span>}
               </div>
-              <div className="league-icon-container">
+              <div
+                className="league-icon-container"
+                onClick={() => toggleLeague("NHL")}
+              >
                 <img
                   src={NHLLogo}
                   alt="NHL"
                   className={`league-icon ${
                     selectedLeagues.NHL ? "selected" : ""
                   }`}
-                  onClick={() => toggleLeague("NHL")}
                 />
                 {selectedLeagues.NHL && <span className="checkmark">✓</span>}
               </div>
             </div>
-            <span>How many in a row can you guess correctly?</span>
           </div>
         ) : (
           <div className="instructions-container">

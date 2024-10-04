@@ -170,6 +170,7 @@ const GuessInput = ({
   const [animateScore, setAnimateScore] = useState(false);
   const [correctGuesses, setCorrectGuesses] = useState([]);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [showStrikeTooltip, setShowStrikeTooltip] = useState(false);
   const [animateGuessCount, setAnimateGuessCount] = useState(false);
   const [inputAnimation, setInputAnimation] = useState({
     animate: false,
@@ -277,98 +278,118 @@ const GuessInput = ({
   };
 
   return (
-    <InputContainer>
-      <Input
-        ref={inputRef}
-        disabled={disabled}
-        type="text"
-        value={guess || ""}
-        onChange={handleGuessChange}
-        onFocus={() => setShowDropdown(true)}
-        placeholder="Enter player name"
-        onKeyDown={handleKeyDown}
-        animate={inputAnimation.animate}
-        isCorrect={inputAnimation.isCorrect}
-      />
+    <div className="guessInput-container">
+      <InputContainer>
+        <Input
+          ref={inputRef}
+          disabled={disabled}
+          type="text"
+          value={guess || ""}
+          onChange={handleGuessChange}
+          onFocus={() => setShowDropdown(true)}
+          placeholder="Enter player name"
+          onKeyDown={handleKeyDown}
+          animate={inputAnimation.animate}
+          isCorrect={inputAnimation.isCorrect}
+        />
 
-      {!gauntletMode ? (
-        <>
-          <AnimatedGuessCounter className={animateGuessCount ? "animate" : ""}>
-            {6 - guessCount}
-          </AnimatedGuessCounter>
-          <ActionButton
-            ref={actionButtonRef}
-            isGiveUp={isGiveUp}
-            onClick={handleActionClick}
-            disabled={disabled}
-          >
-            {isGiveUp ? "Give Up" : "X"}
-          </ActionButton>
-        </>
-      ) : (
-        <>
-          <AnimatedScoreCounter
-            className={animateScore ? "animate" : ""}
-            style={{
-              color: "#ffffff",
-              width: "30px",
-              height: "30px",
-              backgroundColor: "#4CAF50",
-              position: "relative",
-            }}
-            onMouseEnter={() => setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
-          >
-            {gauntletScore}
-            {showTooltip && correctGuesses.length > 50 && (
-              <TooltipContainer
-                style={{
-                  maxHeight: "100px",
-                  backgroundColor: "black",
-                  border: "5px solid #6e6e6e",
-                  borderRadius: "8px",
-                  padding: "10px",
-                  overflow: "auto",
-                }}
-              >
-                <ul
+        {!gauntletMode ? (
+          <>
+            <AnimatedGuessCounter
+              className={animateGuessCount ? "animate" : ""}
+            >
+              {6 - guessCount}
+            </AnimatedGuessCounter>
+            <ActionButton
+              ref={actionButtonRef}
+              isGiveUp={isGiveUp}
+              onClick={handleActionClick}
+              disabled={disabled}
+            >
+              {isGiveUp ? "Give Up" : "X"}
+            </ActionButton>
+          </>
+        ) : (
+          <>
+            <AnimatedScoreCounter
+              className={animateScore ? "animate" : ""}
+              style={{
+                color: "#ffffff",
+                width: "30px",
+                height: "30px",
+                backgroundColor: "#4CAF50",
+                position: "relative",
+              }}
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+            >
+              {gauntletScore}
+              {showTooltip && correctGuesses.length > 50 && (
+                <TooltipContainer
                   style={{
-                    padding: 0,
-                    margin: 0,
-                    listStyleType: "none",
+                    maxHeight: "100px",
+                    backgroundColor: "black",
+                    border: "5px solid #6e6e6e",
+                    borderRadius: "8px",
+                    padding: "10px",
+                    overflow: "auto",
                   }}
                 >
-                  {correctGuesses.map((guess, index) => (
-                    <li key={index}>{guess}</li>
-                  ))}
-                </ul>
-              </TooltipContainer>
-            )}
-          </AnimatedScoreCounter>
-          <AnimatedGuessCounter
-            className={animateStrike ? "animate" : ""}
-            style={{ backgroundColor: "#F44336" }}
-          >
-            {strikesLeft}
-          </AnimatedGuessCounter>
-        </>
-      )}
+                  <ul
+                    style={{
+                      padding: 0,
+                      margin: 0,
+                      listStyleType: "none",
+                    }}
+                  >
+                    {correctGuesses.map((guess, index) => (
+                      <li key={index}>{guess}</li>
+                    ))}
+                  </ul>
+                </TooltipContainer>
+              )}
+            </AnimatedScoreCounter>
+            <AnimatedGuessCounter
+              className={animateStrike ? "animate" : ""}
+              style={{ backgroundColor: "#F44336", position: "relative" }}
+              onMouseEnter={() => setShowStrikeTooltip(true)}
+              onMouseLeave={() => setShowStrikeTooltip(false)}
+            >
+              {strikesLeft}
+              {showStrikeTooltip && (
+                <TooltipContainer
+                  style={{
+                    backgroundColor: "black",
+                    border: "1px solid #6e6e6e",
+                    borderRadius: "4px",
+                    padding: "5px",
+                    position: "absolute",
+                    top: "35px",
+                  }}
+                >
+                  {strikesLeft} strikes remaining
+                </TooltipContainer>
+              )}
+            </AnimatedGuessCounter>
+          </>
+        )}
 
-      {showDropdown && (
-        <Dropdown ref={dropdownRef}>
-          {options
-            .filter((option) =>
-              option.toLowerCase().includes(guess.toLowerCase())
-            )
-            .sort((a, b) => a.localeCompare(b))
-            .map((option, index) => (
-              <DropdownItem key={index} onClick={handleOptionClick}>
-                {option}
-              </DropdownItem>
-            ))}
-        </Dropdown>
-      )}
-    </InputContainer>
+        {showDropdown && (
+          <Dropdown ref={dropdownRef} style={{ scrollbarWidth: "none" }}>
+            {options
+              .filter((option) =>
+                option.toLowerCase().includes(guess.toLowerCase())
+              )
+              .sort((a, b) => a.localeCompare(b))
+              .map((option, index) => (
+                <DropdownItem key={index} onClick={handleOptionClick}>
+                  {option}
+                </DropdownItem>
+              ))}
+          </Dropdown>
+        )}
+      </InputContainer>
+    </div>
   );
 };
 
