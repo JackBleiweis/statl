@@ -112,6 +112,14 @@ def main():
     case_insensitive_duplicates = [players_list[i] for i, player in enumerate(lowercase_players) 
                                    if lowercase_players.count(player) > 1]
 
+    league_counts = {
+        'NHL': 0,
+        'NBA': 0,
+        'NFL': 0,
+        'MLB': 0,
+        'Unknown': 0
+    }
+
     for player_name, player_data in players.items():
         # Check if player is in constants.js (case-insensitive)
         if player_name.lower() not in lowercase_players:
@@ -137,10 +145,13 @@ def main():
                 league = 'NHL'  # Assume NHL for any other position
 
         if league == 'NHL':
+            league_counts['NHL'] += 1
             is_valid, missing_keys = check_player_data(player_data, NHL)
         elif league == 'NBA':
+            league_counts['NBA'] += 1
             is_valid, missing_keys = check_player_data(player_data, NBA)
         elif league == 'NFL':
+            league_counts['NFL'] += 1
             if position == 'QB':
                 is_valid, missing_keys = check_player_data(player_data, NFLQB)
             elif position == 'RB':
@@ -153,8 +164,10 @@ def main():
                 invalid_players.append((player_name, f"Unknown NFL position: {position}"))
                 continue
         elif league in ['AL', 'NL', 'MLB']:
+            league_counts['MLB'] += 1
             is_valid, missing_keys = check_player_data(player_data, MLB)
         else:
+            league_counts['Unknown'] += 1
             invalid_players.append((player_name, f"Unknown league: {league}"))
             continue
 
@@ -211,6 +224,13 @@ def main():
             f.write(new_constants_content)
         
         print(f"\nAdded {len(missing_from_constants)} player(s) to constants.js")
+
+    # Print player counts by league
+    print("\nPlayer counts by league:")
+    for league, count in league_counts.items():
+        if count > 0:
+            print(f"{league}: {count}")
+    print(f"Total players: {sum(league_counts.values())}")
 
     # Save the updated players data back to the file
     with open('statl/src/players.json', 'w') as f:
