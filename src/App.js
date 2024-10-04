@@ -5,6 +5,7 @@ import Modal from "./modal";
 import "./styles.scss";
 import GuessInput from "./GuessInput";
 import logo from "./statl-logo.png"; // Import the logo
+import SkipButton from "./skipButton";
 
 import { FaInfoCircle } from "react-icons/fa";
 import { FaMedal } from "react-icons/fa";
@@ -152,6 +153,7 @@ const App = () => {
     MLB: true,
     NHL: true,
   });
+  const [usedSkip, setUsedSkip] = useState(false);
 
   // Add new state variables for daily mode
   const [dailyModeState, setDailyModeState] = useState({
@@ -303,6 +305,7 @@ const App = () => {
       setGauntletMode(true);
       setStrikes(3);
       setGauntletScore(0);
+      setUsedSkip(false);
 
       // Save current daily mode state
       setDailyModeState({
@@ -731,10 +734,10 @@ const App = () => {
       <LogoContainer>
         <ResponsiveLogo src={logo} alt="Statl Logo" />
         <ToggleContainer>
+          <GauntletModeText>Gauntlet Mode</GauntletModeText>
           <ToggleButton onClick={toggleGauntletMode} active={gauntletMode}>
             {gauntletMode ? "Exit" : "Enter"} Gauntlet
           </ToggleButton>
-          <GauntletModeText>Gauntlet Mode</GauntletModeText>
         </ToggleContainer>
       </LogoContainer>
 
@@ -963,6 +966,14 @@ const App = () => {
           gauntletPlayer={gauntletPlayer}
           selectedLeagues={selectedLeagues}
           setSelectedLeagues={setSelectedLeagues}
+        />
+      )}
+      {gauntletMode && (
+        <SkipButton
+          strikes={strikes}
+          generateNewGauntletPlayer={generateNewGauntletPlayer}
+          usedSkip={usedSkip}
+          setUsedSkip={setUsedSkip}
         />
       )}
     </div>
