@@ -334,6 +334,7 @@ const players = [
   "Casey Mize",
   "Casey Schmitt",
   "Cason Wallace",
+  "Cavan Biggio",
   "Ceddanne Rafaela",
   "Cedric Mullins II",
   "Cedric Tillman",
