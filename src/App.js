@@ -461,6 +461,8 @@ const App = () => {
                 gauntletScore.toString()
               );
             }
+          } else {
+            generateNewGauntletPlayer();
           }
           return newStrikes;
         });
@@ -754,9 +756,6 @@ const App = () => {
           gauntletScore={gauntletScore}
         />
       </div>
-      {gauntletMode && strikes === 0 && (
-        <span>The player was: {gauntletPlayer}</span>
-      )}
       {(gauntletMode ? gauntletPlayer : randomPlayer) &&
         (gauntletMode ? gauntletLeagueEnum : leagueEnum) &&
         playersData[gauntletMode ? gauntletPlayer : randomPlayer] &&
@@ -966,14 +965,6 @@ const App = () => {
           gauntletPlayer={gauntletPlayer}
           selectedLeagues={selectedLeagues}
           setSelectedLeagues={setSelectedLeagues}
-        />
-      )}
-      {gauntletMode && (
-        <SkipButton
-          strikes={strikes}
-          generateNewGauntletPlayer={generateNewGauntletPlayer}
-          usedSkip={usedSkip}
-          setUsedSkip={setUsedSkip}
         />
       )}
     </div>

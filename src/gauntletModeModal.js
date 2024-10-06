@@ -4,6 +4,7 @@ import NBALogo from "./NBA-logo.png";
 import MLBLogo from "./MLB-logo.png";
 import NHLLogo from "./NHL-logo.png";
 import "./modal.scss";
+import { FaCheckCircle } from "react-icons/fa";
 
 const GauntletModeModal = ({
   isOpen,
@@ -67,9 +68,8 @@ const GauntletModeModal = ({
         {strikes !== 0 ? (
           <div className="instructions-container">
             <h3 className="title">Welcome to Gauntlet Mode!</h3>
-            <span>Guess as many players correctly in a row.</span>
+            <span>Guess players based on their stats.</span>
             <span>You have 3 strikes.</span>
-            <span>You get one skip per game.</span>
             <span>Select your leagues:</span>
             <div className="league-images">
               <div
@@ -83,7 +83,7 @@ const GauntletModeModal = ({
                     selectedLeagues.NFL ? "selected" : ""
                   }`}
                 />
-                {selectedLeagues.NFL && <span className="checkmark">✓</span>}
+                {selectedLeagues.NFL && <FaCheckCircle color="#4a90e2" />}
               </div>
               <div
                 className="league-icon-container"
@@ -96,7 +96,7 @@ const GauntletModeModal = ({
                     selectedLeagues.NBA ? "selected" : ""
                   }`}
                 />
-                {selectedLeagues.NBA && <span className="checkmark">✓</span>}
+                {selectedLeagues.NFL && <FaCheckCircle color="#4a90e2" />}
               </div>
               <div
                 className="league-icon-container"
@@ -109,7 +109,7 @@ const GauntletModeModal = ({
                     selectedLeagues.MLB ? "selected" : ""
                   }`}
                 />
-                {selectedLeagues.MLB && <span className="checkmark">✓</span>}
+                {selectedLeagues.NFL && <FaCheckCircle color="#4a90e2" />}
               </div>
               <div
                 className="league-icon-container"
@@ -122,7 +122,7 @@ const GauntletModeModal = ({
                     selectedLeagues.NHL ? "selected" : ""
                   }`}
                 />
-                {selectedLeagues.NHL && <span className="checkmark">✓</span>}
+                {selectedLeagues.NFL && <FaCheckCircle color="#4a90e2" />}
               </div>
             </div>
           </div>
