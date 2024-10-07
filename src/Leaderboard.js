@@ -1,38 +1,44 @@
-import React, { useEffect, useState, useRef } from "react";
-import Profiles from './Profiles'
+import React, { useEffect, useState } from "react";
+import Profiles from "./Profiles";
 import ScoreSubmissionForm from "./ScoreSubmissionForm";
 
 const Leaderboard = (props) => {
-  const { setShowLeaderboard, gauntletScore, submitted, setSubmitted } = props
-  const [timeFilter, setTimeFilter] = useState('all')
-  const [profiles, setProfiles] = useState([])
+  const { setShowLeaderboard, gauntletScore, submitted, setSubmitted } = props;
+  const [timeFilter, setTimeFilter] = useState("all");
+  const [profiles, setProfiles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProfiles = async () => {
-      console.log('About to try and get leaderboard')
+      setLoading(true);
+      setError(null);
       try {
-        const response = await fetch("/.netlify/functions/getProfiles"); // Call to your serverless function to fetch profiles
+        const response = await fetch("/.netlify/functions/getProfiles");
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        setProfiles(data); // Set the fetched profiles
-        console.log(data)
+        setProfiles(data);
+        console.log("Fetched profiles:", data);
       } catch (error) {
         console.error("Error fetching profiles:", error);
+        setError("Failed to load leaderboard. Please try again.");
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchProfiles(); // Fetch profiles on component mount
+    fetchProfiles();
   }, []);
 
   const handleDurationClick = (time) => {
-    setTimeFilter(time)
+    setTimeFilter(time);
   };
 
   const handleSubmit = async (scoreData) => {
-    setSubmitted(true)
     try {
+      setSubmitted(true);
       const response = await fetch("/.netlify/functions/submitScore", {
         method: "POST",
         headers: {
@@ -41,37 +47,62 @@ const Leaderboard = (props) => {
         body: JSON.stringify(scoreData),
       });
       if (!response.ok) {
-        throw new Error("Network response was not ok", response);
+        throw new Error("Network response was not ok");
       }
-
       const data = await response.json();
-      console.log("Success:", data);
+      console.log("Score submitted successfully:", data);
+      // Optionally, you can update the profiles state here to include the new score
+      setProfiles((prevProfiles) => [...prevProfiles, data]);
     } catch (error) {
       console.error("Error submitting score:", error);
+      setError("Failed to submit score. Please try again.");
+      setSubmitted(false);
     }
   };
 
   return (
     <>
-      <div className="leaderboard-overlay" onClick={() => setShowLeaderboard(false)} >
-        <div className='leaderboard-content' onClick={e => e.stopPropagation()}>
+      <div
+        className="leaderboard-overlay"
+        onClick={() => setShowLeaderboard(false)}
+      >
+        <div
+          className="leaderboard-content"
+          onClick={(e) => e.stopPropagation()}
+        >
           <h1>Leaderboard</h1>
           <div className="duration-filter">
-            <button data-id="all" onClick={() => handleDurationClick('all')}>
+            <button data-id="all" onClick={() => handleDurationClick("all")}>
               All Time
             </button>
-            <button data-id="30" onClick={() => handleDurationClick('month')}>
+            <button data-id="30" onClick={() => handleDurationClick("month")}>
               Last 30 Days
             </button>
-            <button data-id="7" onClick={() => handleDurationClick('week')}>
+            <button data-id="7" onClick={() => handleDurationClick("week")}>
               Last 7 Days
             </button>
           </div>
-          <div className="all-scores">
-            <Profiles timeFilter={timeFilter} profiles={profiles} setProfiles={setProfiles} />
-          </div>
-          {!submitted ? <ScoreSubmissionForm onSubmit={handleSubmit} gauntletScore={gauntletScore} /> :
-            <div>Thanks for playing! Refresh and play again!</div>}
+          {loading ? (
+            <p>Loading leaderboard...</p>
+          ) : error ? (
+            <p>{error}</p>
+          ) : (
+            <div className="all-scores">
+              <Profiles
+                timeFilter={timeFilter}
+                profiles={profiles}
+                setProfiles={setProfiles}
+              />
+            </div>
+          )}
+          {!submitted ? (
+            <ScoreSubmissionForm
+              onSubmit={handleSubmit}
+              gauntletScore={gauntletScore}
+            />
+          ) : (
+            <div>Thanks for playing! Refresh and play again!</div>
+          )}
         </div>
       </div>
     </>
