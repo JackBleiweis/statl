@@ -12,7 +12,7 @@ exports.handler = async (event, context) => {
         const collection = database.collection("leaderboard");
 
         const profiles = await collection.find().toArray(); // Fetch all profiles
-
+        console.log("Here we're trying to get the leaderboard")
         return {
             statusCode: 200,
             body: JSON.stringify(profiles),

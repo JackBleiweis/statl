@@ -15,7 +15,8 @@ exports.handler = async (event) => {
 
             const newProfile = { name, score, date: new Date() };
             await profiles.insertOne(newProfile);
-
+            console.log('below is the new profile at submitScore')
+            console.log(newProfile)
             return {
                 statusCode: 200,
                 body: JSON.stringify(newProfile),
