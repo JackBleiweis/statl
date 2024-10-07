@@ -153,8 +153,7 @@ const App = () => {
     MLB: true,
     NHL: true,
   });
-  const [usedSkip, setUsedSkip] = useState(false);
-
+  const [gauntletModeGuesses, setGauntletModeGuesses] = useState([]);
   // Add new state variables for daily mode
   const [dailyModeState, setDailyModeState] = useState({
     gameOver: false,
@@ -305,7 +304,7 @@ const App = () => {
       setGauntletMode(true);
       setStrikes(3);
       setGauntletScore(0);
-      setUsedSkip(false);
+      setGauntletModeGuesses([]);
 
       // Save current daily mode state
       setDailyModeState({
@@ -368,7 +367,7 @@ const App = () => {
   };
 
   // Modify generateNewPlayer to be Gauntlet-specific
-  const generateNewGauntletPlayer = () => {
+  const generateNewGauntletPlayer = (isSelectingLeagues) => {
     const playerNames = Object.keys(playersData);
     let availablePlayers = [];
 
@@ -407,15 +406,18 @@ const App = () => {
     resetGauntletState();
 
     // Add the new player to the list of used players
-    setUsedGauntletPlayers((prevUsedPlayers) => [
-      ...prevUsedPlayers,
-      randomName,
-    ]);
+    // Don't want to set used players if the the leagues are being switched
+    if (!isSelectingLeagues) {
+      setUsedGauntletPlayers((prevUsedPlayers) => [
+        ...prevUsedPlayers,
+        randomName,
+      ]);
+    }
   };
 
   //Ensures the gauntlet player is in a selected league
   useEffect(() => {
-    generateNewGauntletPlayer();
+    generateNewGauntletPlayer(true);
   }, [selectedLeagues]);
 
   //Determines the league of the player
@@ -445,9 +447,17 @@ const App = () => {
     if (gauntletMode) {
       if (option.toLowerCase() === currentPlayer.toLowerCase()) {
         setGauntletScore((prevScore) => prevScore + 1);
+        setGauntletModeGuesses([
+          ...gauntletModeGuesses,
+          { player: gauntletPlayer, isCorrect: true },
+        ]);
         generateNewGauntletPlayer();
         return true;
       } else {
+        setGauntletModeGuesses([
+          ...gauntletModeGuesses,
+          { player: gauntletPlayer, isCorrect: false },
+        ]);
         setStrikes((prevStrikes) => {
           const newStrikes = prevStrikes - 1;
           if (newStrikes === 0) {
@@ -962,6 +972,7 @@ const App = () => {
           strikes={strikes}
           gauntletScore={gauntletScore}
           gauntletHighScore={gauntletHighScore}
+          gauntletModeGuesses={gauntletModeGuesses}
           gauntletPlayer={gauntletPlayer}
           selectedLeagues={selectedLeagues}
           setSelectedLeagues={setSelectedLeagues}

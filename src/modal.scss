@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap");
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -18,6 +20,7 @@
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     min-height: 70vh;
+    min-width: 210px;
     max-height: 70vh;
     max-width: 60%;
     overflow-y: auto;
@@ -67,15 +70,23 @@
       }
     }
 
+    h3 {
+      text-align: left;
+    }
+
     .instructions-container {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      align-items: left;
+      justify-content: left;
+      text-align: left;
       gap: 1rem;
 
       .title {
         margin-top: 0px !important;
+        justify-content: left;
+        align-items: left;
+        text-align: left;
       }
     }
 
@@ -208,6 +219,10 @@
     .button-container {
       display: flex;
       justify-content: center;
+      
+      button {
+        font-family: "Poppins"; // Force the button to use the same font
+      }
     }
   }
 }
@@ -257,3 +272,25 @@
     opacity: 0;
   }
 }
+
+.guess-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 30px;
+  border-radius: 5px;
+  margin: 8px 0px;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.correct {
+  background-color: #4a90e2;
+}
+
+.incorrect {
+  background-color: #f44336;
+}
+
