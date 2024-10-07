@@ -11,7 +11,7 @@ exports.handler = async (event) => {
         try {
             await client.connect();
             const database = client.db("statl-leaderboard"); // Replace with your database name
-            const profiles = database.collection("profiles"); // Collection where you want to save scores
+            const profiles = database.collection("leaderboard"); // Collection where you want to save scores
 
             const newProfile = { name, score, date: new Date() };
             await profiles.insertOne(newProfile);

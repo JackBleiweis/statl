@@ -16,6 +16,7 @@ const Leaderboard = (props) => {
         }
         const data = await response.json();
         setProfiles(data); // Set the fetched profiles
+        console.log(data)
       } catch (error) {
         console.error("Error fetching profiles:", error);
       }

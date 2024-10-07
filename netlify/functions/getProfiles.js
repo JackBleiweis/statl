@@ -8,8 +8,8 @@ exports.handler = async (event, context) => {
 
     try {
         await client.connect();
-        const database = client.db("your_database_name"); // Replace with your actual database name
-        const collection = database.collection("profiles");
+        const database = client.db("statl-leaderboard"); // Replace with your actual database name
+        const collection = database.collection("leaderboard");
 
         const profiles = await collection.find().toArray(); // Fetch all profiles
 
