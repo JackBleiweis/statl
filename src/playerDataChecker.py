@@ -158,7 +158,7 @@ def main():
                 is_valid, missing_keys = check_player_data(player_data, NFLRB)
             elif position == 'WR':
                 is_valid, missing_keys = check_player_data(player_data, NFLWR)
-            elif position in ['DE', 'DT', 'LB', 'CB', 'S', 'RCB', 'FS', 'SS', 'LCB']:
+            elif position in ['DE', 'DT', 'LB', 'CB', 'S', 'RCB', 'FS', 'SS', 'LCB', 'D']:
                 is_valid, missing_keys = check_player_data(player_data, NFLD)
             else:
                 invalid_players.append((player_name, f"Unknown NFL position: {position}"))
