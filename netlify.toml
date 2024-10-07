@@ -1,0 +1,30 @@
+   [build]
+     command = "npm run build"
+     functions = "functions"
+     publish = "build"
+
+   [dev]
+     command = "npm run start"
+     port = 8888
+     targetPort = 3000
+     framework = "#custom"
+     publish = "public"
+     jwtRolePath = "app_metadata.authorization.roles"
+     jwtSecret = "MY_JWT_SECRET_VALUE"
+     autoLaunch = true
+
+   [[redirects]]
+     from = "/*"
+     to = "/index.html"
+     status = 200
+
+   [[redirects]]
+     from = "/api/*"
+     to = "/.netlify/functions/:splat"
+     status = 200
+
+   [functions]
+     node_bundler = "esbuild"
+
+   [build.environment]
+     NODE_VERSION = "18"

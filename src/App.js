@@ -6,9 +6,10 @@ import "./styles.scss";
 import GuessInput from "./GuessInput";
 import logo from "./statl-logo.png"; // Import the logo
 import SkipButton from "./skipButton";
+import Leaderboard from "./Leaderboard";
 
 import { FaInfoCircle } from "react-icons/fa";
-import { FaMedal } from "react-icons/fa";
+import { FaMedal, FaTrophy } from "react-icons/fa";
 
 import styled from "styled-components";
 import RulesModal from "./RulesModal";
@@ -153,7 +154,14 @@ const App = () => {
     MLB: true,
     NHL: true,
   });
+
   const [usedSkip, setUsedSkip] = useState(false);
+
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [allowNameSubmission, setAllowNameSubmission] = useState(true);
+
+  const [gauntletModeGuesses, setGauntletModeGuesses] = useState([]);
 
   // Add new state variables for daily mode
   const [dailyModeState, setDailyModeState] = useState({
@@ -301,11 +309,12 @@ const App = () => {
   const toggleGauntletMode = () => {
     if (!gauntletMode) {
       // Entering Gauntlet Mode
+      setSubmitted(false);
       setIsGauntletModalOpen(true);
       setGauntletMode(true);
       setStrikes(3);
       setGauntletScore(0);
-      setUsedSkip(false);
+      setGauntletModeGuesses([]);
 
       // Save current daily mode state
       setDailyModeState({
@@ -368,7 +377,7 @@ const App = () => {
   };
 
   // Modify generateNewPlayer to be Gauntlet-specific
-  const generateNewGauntletPlayer = () => {
+  const generateNewGauntletPlayer = (isSelectingLeagues) => {
     const playerNames = Object.keys(playersData);
     let availablePlayers = [];
 
@@ -407,15 +416,18 @@ const App = () => {
     resetGauntletState();
 
     // Add the new player to the list of used players
-    setUsedGauntletPlayers((prevUsedPlayers) => [
-      ...prevUsedPlayers,
-      randomName,
-    ]);
+    // Don't want to set used players if the the leagues are being switched
+    if (!isSelectingLeagues) {
+      setUsedGauntletPlayers((prevUsedPlayers) => [
+        ...prevUsedPlayers,
+        randomName,
+      ]);
+    }
   };
 
   //Ensures the gauntlet player is in a selected league
   useEffect(() => {
-    generateNewGauntletPlayer();
+    generateNewGauntletPlayer(true);
   }, [selectedLeagues]);
 
   //Determines the league of the player
@@ -445,9 +457,17 @@ const App = () => {
     if (gauntletMode) {
       if (option.toLowerCase() === currentPlayer.toLowerCase()) {
         setGauntletScore((prevScore) => prevScore + 1);
+        setGauntletModeGuesses([
+          ...gauntletModeGuesses,
+          { player: gauntletPlayer, isCorrect: true },
+        ]);
         generateNewGauntletPlayer();
         return true;
       } else {
+        setGauntletModeGuesses([
+          ...gauntletModeGuesses,
+          { player: gauntletPlayer, isCorrect: false },
+        ]);
         setStrikes((prevStrikes) => {
           const newStrikes = prevStrikes - 1;
           if (newStrikes === 0) {
@@ -684,6 +704,11 @@ const App = () => {
     setIsGauntletModalOpen(false);
   };
 
+  const handleOpenLeaderboard = () => {
+    setShowLeaderboard(true);
+    setIsGauntletModalOpen(false);
+  };
+
   return (
     <div className="container" style={{ marginBottom: "100px" }}>
       <ButtonContainer>
@@ -696,6 +721,16 @@ const App = () => {
             }
           >
             <FaMedal />
+          </LogoButton>
+        )}
+        {gauntletMode && (
+          <LogoButton
+            onClick={() => {
+              setShowLeaderboard(true);
+              setAllowNameSubmission(false);
+            }}
+          >
+            <FaTrophy />
           </LogoButton>
         )}
         <StyledButton
@@ -742,7 +777,15 @@ const App = () => {
           </ToggleButton>
         </ToggleContainer>
       </LogoContainer>
-
+      {showLeaderboard && (
+        <Leaderboard
+          setShowLeaderboard={setShowLeaderboard}
+          gauntletScore={gauntletScore}
+          submitted={submitted}
+          setSubmitted={setSubmitted}
+          allowNameSubmission={allowNameSubmission}
+        />
+      )}
       <div className="sticky-header">
         <GuessInput
           guess={guess}
@@ -962,9 +1005,12 @@ const App = () => {
           strikes={strikes}
           gauntletScore={gauntletScore}
           gauntletHighScore={gauntletHighScore}
+          gauntletModeGuesses={gauntletModeGuesses}
           gauntletPlayer={gauntletPlayer}
           selectedLeagues={selectedLeagues}
           setSelectedLeagues={setSelectedLeagues}
+          handleOpenLeaderboard={handleOpenLeaderboard}
+          setAllowNameSubmission={setAllowNameSubmission}
         />
       )}
     </div>
