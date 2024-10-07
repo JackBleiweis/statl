@@ -43,9 +43,9 @@ def scrape_player(player_url, player, team):
         plus_minus = row.find('td', {'data-stat': 'plus_minus'})
         player_data[player]['+/-'].append(plus_minus.text if plus_minus else '0')
 
-    # Replace empty strings with None
+    # Replace empty strings with "-"
     for stat in player_data[player]:
-        player_data[player][stat] = [None if v == '' else v for v in player_data[player][stat]]
+        player_data[player][stat] = ["-" if v == '' else v for v in player_data[player][stat]]
 
     # Check if the last element in the team column matches the team being passed
     if player_data[player]['Tm'][-1] != team:
@@ -235,7 +235,29 @@ if __name__ == "__main__":
 #   ["Kent Johnson", "CBJ"],
 #   ["Brett Pesce", "CAR"],
         # ["William Karlsson", "VGK"]
-
+['Henrik Sedin', 'VAN'],
+['Daniel Sedin', 'VAN'],
+['Henrik Zetterberg', 'DET'],
+['Nicklas Lidstrom', 'DET'],
+['Steve Yzerman', 'DET'],
+['Wayne Gretzky', 'NYR'],
+['Mark Messier', 'NYR'],
+    ['Mario Lemieux', 'PIT'],
+    ['Maurice Richard', 'MTL'],
+    ['Jean Beliveau', 'MTL'],
+    ['Jaromir Jagr', 'CGY'],
+    ['Joe Sakic', 'COL'],
+    ['Phil Esposito', 'BOS'],
+    ['Joe Sakic', 'COL'],
+    ['Jarome Iginla', 'CGY'],
+    ['Mats Sundin', 'VAN'],
+    ['Peter Forsberg', 'COL'],
+    ['Teemu Selanne', 'ANA'],
+    ['Pavel Datsyuk', 'DET'],
+    ['Marian Hossa', 'CHI'],
+    ['Daniel Alfredsson', 'DET'],
+    ['Vincent Lecavalier', 'PHI'],
+    ['Keith Tkachuk', 'STL']
     ]
 
     # Load existing player data

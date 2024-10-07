@@ -190,7 +190,7 @@ const App = () => {
     const randomName = playerNames[dateIndex];
 
     setRandomPlayer(randomName);
-    setCareerLength(playersData[randomName].Age.length);
+    setCareerLength(playersData[randomName].Tm.length);
     const playerLeague = playersData[randomName].Lg
       ? playersData[randomName].Lg[0]
       : "NFL";
