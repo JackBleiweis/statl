@@ -5,7 +5,7 @@ const uri = process.env.MONGODB_URI; // Use your MongoDB URI from the environmen
 
 exports.handler = async (event, context) => {
     const client = new MongoClient(uri);
-
+    console.log('In get profiles, about to get from monogo')
     try {
         await client.connect();
         const database = client.db("statl-leaderboard"); // Replace with your actual database name

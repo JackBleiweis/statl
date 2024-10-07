@@ -9,6 +9,7 @@ const Leaderboard = (props) => {
 
   useEffect(() => {
     const fetchProfiles = async () => {
+      console.log('About to try and get leaderboard')
       try {
         const response = await fetch("/.netlify/functions/getProfiles"); // Call to your serverless function to fetch profiles
         if (!response.ok) {

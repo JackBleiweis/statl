@@ -7,7 +7,7 @@ const client = new MongoClient(uri);
 exports.handler = async (event) => {
     if (event.httpMethod === "POST") {
         const { name, score } = JSON.parse(event.body);
-
+        console.log('Are we getting to post')
         try {
             await client.connect();
             const database = client.db("statl-leaderboard"); // Replace with your database name
