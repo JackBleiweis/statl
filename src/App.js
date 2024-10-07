@@ -9,7 +9,7 @@ import SkipButton from "./skipButton";
 import Leaderboard from "./Leaderboard";
 
 import { FaInfoCircle } from "react-icons/fa";
-import { FaMedal } from "react-icons/fa";
+import { FaMedal, FaTrophy } from "react-icons/fa";
 
 import styled from "styled-components";
 import RulesModal from "./RulesModal";
@@ -159,6 +159,7 @@ const App = () => {
 
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [allowNameSubmission, setAllowNameSubmission] = useState(true);
 
   const [gauntletModeGuesses, setGauntletModeGuesses] = useState([]);
 
@@ -711,9 +712,6 @@ const App = () => {
   return (
     <div className="container" style={{ marginBottom: "100px" }}>
       <ButtonContainer>
-        <button onClick={() => setShowLeaderboard(!showLeaderboard)}>
-          Leaderboard
-        </button>
         {!gauntletMode && (
           <LogoButton
             onClick={
@@ -723,6 +721,16 @@ const App = () => {
             }
           >
             <FaMedal />
+          </LogoButton>
+        )}
+        {gauntletMode && (
+          <LogoButton
+            onClick={() => {
+              setShowLeaderboard(true);
+              setAllowNameSubmission(false);
+            }}
+          >
+            <FaTrophy />
           </LogoButton>
         )}
         <StyledButton
@@ -775,6 +783,7 @@ const App = () => {
           gauntletScore={gauntletScore}
           submitted={submitted}
           setSubmitted={setSubmitted}
+          allowNameSubmission={allowNameSubmission}
         />
       )}
       <div className="sticky-header">
@@ -1001,6 +1010,7 @@ const App = () => {
           selectedLeagues={selectedLeagues}
           setSelectedLeagues={setSelectedLeagues}
           handleOpenLeaderboard={handleOpenLeaderboard}
+          setAllowNameSubmission={setAllowNameSubmission}
         />
       )}
     </div>

@@ -3,7 +3,13 @@ import Profiles from "./Profiles";
 import ScoreSubmissionForm from "./ScoreSubmissionForm";
 
 const Leaderboard = (props) => {
-  const { setShowLeaderboard, gauntletScore, submitted, setSubmitted } = props;
+  const {
+    setShowLeaderboard,
+    gauntletScore,
+    submitted,
+    setSubmitted,
+    allowNameSubmission,
+  } = props;
   const [timeFilter, setTimeFilter] = useState("all");
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -104,14 +110,15 @@ const Leaderboard = (props) => {
               />
             </div>
           )}
-          {!submitted ? (
-            <ScoreSubmissionForm
-              onSubmit={handleSubmit}
-              gauntletScore={gauntletScore}
-            />
-          ) : (
-            <div>Thanks for playing! Refresh and play again!</div>
-          )}
+          {allowNameSubmission &&
+            (!submitted ? (
+              <ScoreSubmissionForm
+                onSubmit={handleSubmit}
+                gauntletScore={gauntletScore}
+              />
+            ) : (
+              <div>Thanks for playing! Refresh and play again!</div>
+            ))}
         </div>
       </div>
     </>

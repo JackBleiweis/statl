@@ -20,6 +20,7 @@ const GauntletModeModal = ({
   gauntletModeGuesses,
   setSelectedLeagues,
   handleOpenLeaderboard,
+  setAllowNameSubmission,
 }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [noSelectedLeaguesFlag, setNoSelectedLeaguesFlag] = useState(false);
@@ -233,7 +234,10 @@ const GauntletModeModal = ({
                 {isCopied ? "Copied" : "Share"}
               </button>
               <button
-                onClick={() => handleOpenLeaderboard()}
+                onClick={() => {
+                  handleOpenLeaderboard();
+                  setAllowNameSubmission(true);
+                }}
                 style={{
                   textAlign: "center",
                   fontFamily: "Poppins",
