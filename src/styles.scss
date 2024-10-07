@@ -288,3 +288,75 @@ td:not(
     }
   }
 }
+
+.leaderboard-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  .leaderboard-content {
+    position: relative;
+    background-color: #282c34;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease-out;
+    scrollbar-width: 0 !important;
+    z-index: 1001;
+  
+  .all-profiles {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .player-entry {
+      height: 50px;
+      width: 80%;
+      display: flex;
+      align-items: center; /* Center the items vertically */
+      justify-content: space-between; /* Distribute space between items */
+      margin: 10px auto; /* Add some space between entries */
+      padding: 10px; /* Add padding for better spacing */
+      background-color: #1a1a1b; /* Dark background for player entries */
+      border-radius: 4px; /* Rounded corners */
+      transition: background-color 0.3s ease; /* Smooth transition on hover */
+    }
+    
+    .player-entry:hover {
+      background-color: #3a3a3c; /* Change background on hover */
+    }
+    
+    .rank {
+      flex: 0 0 20%; /* Fixed width for rank */
+      font-weight: bold; /* Bold text for rank */
+      color: #ffd700; /* Gold color for rank */
+      text-align: center; /* Center the rank text */
+    }
+    
+    .name {
+      flex: 1; /* Allow name to take up remaining space */
+      font-size: 18px; /* Slightly larger font for names */
+      font-weight: 600; /* Medium weight for names */
+      color: #d7dadc; /* Light text color for names */
+    }
+    
+    .score {
+      flex: 0 0 20%; /* Fixed width for score */
+      font-size: 18px; /* Match the font size of the name */
+      font-weight: bold; /* Bold text for scores */
+      color: #76ff03; /* Green color for scores */
+      text-align: center; /* Center the score text */
+    }
+  }
+  }
+}
