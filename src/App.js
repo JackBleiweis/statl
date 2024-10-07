@@ -154,11 +154,13 @@ const App = () => {
     MLB: true,
     NHL: true,
   });
+
   const [usedSkip, setUsedSkip] = useState(false);
 
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [submitted, setSubmitted] = useState(false)
+  const [submitted, setSubmitted] = useState(false);
 
+  const [gauntletModeGuesses, setGauntletModeGuesses] = useState([]);
 
   // Add new state variables for daily mode
   const [dailyModeState, setDailyModeState] = useState({
@@ -306,12 +308,12 @@ const App = () => {
   const toggleGauntletMode = () => {
     if (!gauntletMode) {
       // Entering Gauntlet Mode
-      setSubmitted(false)
+      setSubmitted(false);
       setIsGauntletModalOpen(true);
       setGauntletMode(true);
       setStrikes(3);
       setGauntletScore(0);
-      setUsedSkip(false);
+      setGauntletModeGuesses([]);
 
       // Save current daily mode state
       setDailyModeState({
@@ -374,7 +376,7 @@ const App = () => {
   };
 
   // Modify generateNewPlayer to be Gauntlet-specific
-  const generateNewGauntletPlayer = () => {
+  const generateNewGauntletPlayer = (isSelectingLeagues) => {
     const playerNames = Object.keys(playersData);
     let availablePlayers = [];
 
@@ -413,15 +415,18 @@ const App = () => {
     resetGauntletState();
 
     // Add the new player to the list of used players
-    setUsedGauntletPlayers((prevUsedPlayers) => [
-      ...prevUsedPlayers,
-      randomName,
-    ]);
+    // Don't want to set used players if the the leagues are being switched
+    if (!isSelectingLeagues) {
+      setUsedGauntletPlayers((prevUsedPlayers) => [
+        ...prevUsedPlayers,
+        randomName,
+      ]);
+    }
   };
 
   //Ensures the gauntlet player is in a selected league
   useEffect(() => {
-    generateNewGauntletPlayer();
+    generateNewGauntletPlayer(true);
   }, [selectedLeagues]);
 
   //Determines the league of the player
@@ -451,9 +456,17 @@ const App = () => {
     if (gauntletMode) {
       if (option.toLowerCase() === currentPlayer.toLowerCase()) {
         setGauntletScore((prevScore) => prevScore + 1);
+        setGauntletModeGuesses([
+          ...gauntletModeGuesses,
+          { player: gauntletPlayer, isCorrect: true },
+        ]);
         generateNewGauntletPlayer();
         return true;
       } else {
+        setGauntletModeGuesses([
+          ...gauntletModeGuesses,
+          { player: gauntletPlayer, isCorrect: false },
+        ]);
         setStrikes((prevStrikes) => {
           const newStrikes = prevStrikes - 1;
           if (newStrikes === 0) {
@@ -661,8 +674,8 @@ const App = () => {
   // TODO: Replace
   const filteredStats = (gauntletMode ? gauntletLeagueEnum : leagueEnum)
     ? Object.values(gauntletMode ? gauntletLeagueEnum : leagueEnum).filter(
-      (stat) => stat !== "Lg"
-    )
+        (stat) => stat !== "Lg"
+      )
     : [];
 
   // TODO: Fix YDS issue w/ NFL (AI issue, switch to script)
@@ -687,6 +700,11 @@ const App = () => {
 
   // Add this function to close the Gauntlet Mode modal
   const closeGauntletModal = () => {
+    setIsGauntletModalOpen(false);
+  };
+
+  const handleOpenLeaderboard = () => {
+    setShowLeaderboard(true);
     setIsGauntletModalOpen(false);
   };
 
@@ -751,7 +769,14 @@ const App = () => {
           </ToggleButton>
         </ToggleContainer>
       </LogoContainer>
-      {showLeaderboard && <Leaderboard setShowLeaderboard={setShowLeaderboard} gauntletScore={gauntletScore} submitted={submitted} setSubmitted={setSubmitted} />}
+      {showLeaderboard && (
+        <Leaderboard
+          setShowLeaderboard={setShowLeaderboard}
+          gauntletScore={gauntletScore}
+          submitted={submitted}
+          setSubmitted={setSubmitted}
+        />
+      )}
       <div className="sticky-header">
         <GuessInput
           guess={guess}
@@ -863,8 +888,8 @@ const App = () => {
                               key !== "Season" &&
                               key !== "Tm") ||
                             selectionCount === 5
-                            ? "pointer"
-                            : "default",
+                          ? "pointer"
+                          : "default",
                         backgroundColor: gauntletMode
                           ? "#4a4a4c"
                           : (canRevealRow && rowIndex === hoveredRow) ||
@@ -878,34 +903,8 @@ const App = () => {
                             (selectionCount === 5 &&
                               (key === "Season" || key === "Tm") &&
                               hoveredSeasonTeamColumn)
-                            ? "#4a90e2"
-                            : revealedRow === rowIndex ||
-                              revealedColumn === key ||
-                              (key === "Tm" &&
-                                revealedTeamCells.includes(rowIndex)) ||
-                              (revealAllNonSeasonTeam &&
-                                key !== "Season" &&
-                                key !== "Tm") ||
-                              revealAll
-                              ? "#4a4a4c"
-                              : selectionCount === 4 &&
-                                (key === "Season" || key === "Tm")
-                                ? "#1a1a1b"
-                                : "",
-                        color:
-                          gauntletMode ||
-                            (canRevealRow && rowIndex === hoveredRow) ||
-                            (canRevealColumn &&
-                              colIndex === hoveredColumn &&
-                              key !== "Tm") ||
-                            (selectionCount === 4 &&
-                              hoveredCell &&
-                              key !== "Season" &&
-                              key !== "Tm") ||
-                            (selectionCount === 5 &&
-                              (key === "Season" || key === "Tm") &&
-                              hoveredSeasonTeamColumn) ||
-                            revealedRow === rowIndex ||
+                          ? "#4a90e2"
+                          : revealedRow === rowIndex ||
                             revealedColumn === key ||
                             (key === "Tm" &&
                               revealedTeamCells.includes(rowIndex)) ||
@@ -913,45 +912,71 @@ const App = () => {
                               key !== "Season" &&
                               key !== "Tm") ||
                             revealAll
+                          ? "#4a4a4c"
+                          : selectionCount === 4 &&
+                            (key === "Season" || key === "Tm")
+                          ? "#1a1a1b"
+                          : "",
+                        color:
+                          gauntletMode ||
+                          (canRevealRow && rowIndex === hoveredRow) ||
+                          (canRevealColumn &&
+                            colIndex === hoveredColumn &&
+                            key !== "Tm") ||
+                          (selectionCount === 4 &&
+                            hoveredCell &&
+                            key !== "Season" &&
+                            key !== "Tm") ||
+                          (selectionCount === 5 &&
+                            (key === "Season" || key === "Tm") &&
+                            hoveredSeasonTeamColumn) ||
+                          revealedRow === rowIndex ||
+                          revealedColumn === key ||
+                          (key === "Tm" &&
+                            revealedTeamCells.includes(rowIndex)) ||
+                          (revealAllNonSeasonTeam &&
+                            key !== "Season" &&
+                            key !== "Tm") ||
+                          revealAll
                             ? "#ffffff"
                             : "",
                         borderColor:
                           (selectionCount === 4 &&
                             key !== "Season" &&
                             key !== "Tm") ||
-                            (selectionCount === 5 &&
-                              (key === "Season" || key === "Tm"))
+                          (selectionCount === 5 &&
+                            (key === "Season" || key === "Tm"))
                             ? "#6e6e6e"
                             : "",
                       }}
                       data-tooltip={
                         key === "Tm" &&
-                          playersData[
+                        playersData[
                           gauntletMode ? gauntletPlayer : randomPlayer
-                          ][key][rowIndex] === "TOT"
+                        ][key][rowIndex] === "TOT"
                           ? "Played on multiple teams in a season"
                           : undefined
                       }
                     >
                       {gauntletMode ||
-                        revealedRow === rowIndex ||
-                        revealedColumn === key ||
-                        (key === "Tm" && revealedTeamCells.includes(rowIndex)) ||
-                        (revealAllNonSeasonTeam &&
-                          key !== "Season" &&
-                          key !== "Tm") ||
-                        revealAll
+                      revealedRow === rowIndex ||
+                      revealedColumn === key ||
+                      (key === "Tm" && revealedTeamCells.includes(rowIndex)) ||
+                      (revealAllNonSeasonTeam &&
+                        key !== "Season" &&
+                        key !== "Tm") ||
+                      revealAll
                         ? key === "Season"
                           ? playersData[
-                            gauntletMode ? gauntletPlayer : randomPlayer
-                          ][key]
+                              gauntletMode ? gauntletPlayer : randomPlayer
+                            ][key]
                             ? playersData[
-                            gauntletMode ? gauntletPlayer : randomPlayer
-                            ][key][rowIndex]
+                                gauntletMode ? gauntletPlayer : randomPlayer
+                              ][key][rowIndex]
                             : "N/A"
                           : playersData[
-                          gauntletMode ? gauntletPlayer : randomPlayer
-                          ][key][rowIndex] || (key === "Tm" ? "DNP" : "0")
+                              gauntletMode ? gauntletPlayer : randomPlayer
+                            ][key][rowIndex] || (key === "Tm" ? "DNP" : "0")
                         : ""}
                     </td>
                   ))}
@@ -971,9 +996,11 @@ const App = () => {
           strikes={strikes}
           gauntletScore={gauntletScore}
           gauntletHighScore={gauntletHighScore}
+          gauntletModeGuesses={gauntletModeGuesses}
           gauntletPlayer={gauntletPlayer}
           selectedLeagues={selectedLeagues}
           setSelectedLeagues={setSelectedLeagues}
+          handleOpenLeaderboard={handleOpenLeaderboard}
         />
       )}
     </div>

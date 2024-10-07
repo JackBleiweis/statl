@@ -72,13 +72,22 @@ const Leaderboard = (props) => {
         >
           <h1>Leaderboard</h1>
           <div className="duration-filter">
-            <button data-id="all" onClick={() => handleDurationClick("all")}>
+            <button
+              className={timeFilter === "all" ? "active" : ""}
+              onClick={() => handleDurationClick("all")}
+            >
               All Time
             </button>
-            <button data-id="30" onClick={() => handleDurationClick("month")}>
+            <button
+              className={timeFilter === "month" ? "active" : ""}
+              onClick={() => handleDurationClick("month")}
+            >
               Last 30 Days
             </button>
-            <button data-id="7" onClick={() => handleDurationClick("week")}>
+            <button
+              className={timeFilter === "week" ? "active" : ""}
+              onClick={() => handleDurationClick("week")}
+            >
               Last 7 Days
             </button>
           </div>

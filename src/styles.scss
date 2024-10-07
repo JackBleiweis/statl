@@ -258,6 +258,8 @@ td:not(
   display: flex;
   gap: 20px;
   padding-bottom: 10px;
+  display: flex;
+  justify-content: center;
   .league-icon-container {
     display: flex;
     flex-direction: column;
@@ -314,49 +316,154 @@ td:not(
     animation: slideUp 0.3s ease-out;
     scrollbar-width: 0 !important;
     z-index: 1001;
-  
-  .all-profiles {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    .player-entry {
-      height: 50px;
-      width: 80%;
+    max-width: 500px;
+    width: 90%;
+
+    .all-profiles {
       display: flex;
-      align-items: center; /* Center the items vertically */
-      justify-content: space-between; /* Distribute space between items */
-      margin: 10px auto; /* Add some space between entries */
-      padding: 10px; /* Add padding for better spacing */
-      background-color: #1a1a1b; /* Dark background for player entries */
-      border-radius: 4px; /* Rounded corners */
-      transition: background-color 0.3s ease; /* Smooth transition on hover */
-    }
-    
-    .player-entry:hover {
-      background-color: #3a3a3c; /* Change background on hover */
-    }
-    
-    .rank {
-      flex: 0 0 20%; /* Fixed width for rank */
-      font-weight: bold; /* Bold text for rank */
-      color: #ffd700; /* Gold color for rank */
-      text-align: center; /* Center the rank text */
-    }
-    
-    .name {
-      flex: 1; /* Allow name to take up remaining space */
-      font-size: 18px; /* Slightly larger font for names */
-      font-weight: 600; /* Medium weight for names */
-      color: #d7dadc; /* Light text color for names */
-    }
-    
-    .score {
-      flex: 0 0 20%; /* Fixed width for score */
-      font-size: 18px; /* Match the font size of the name */
-      font-weight: bold; /* Bold text for scores */
-      color: #76ff03; /* Green color for scores */
-      text-align: center; /* Center the score text */
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+
+      .player-entry {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 10px 0;
+        padding: 10px;
+        background-color: #1a1a1b;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: #3a3a3c;
+        }
+
+        .rank {
+          flex: 0 0 20%;
+          font-weight: bold;
+          color: #ffd700;
+          text-align: center;
+        }
+
+        .name {
+          flex: 1;
+          font-size: 16px;
+          font-weight: 600;
+          color: #d7dadc;
+          text-align: left;
+          padding: 0 10px;
+        }
+
+        .score {
+          flex: 0 0 20%;
+          font-size: 16px;
+          font-weight: bold;
+          color: #4a90e2;
+          text-align: center;
+        }
+      }
     }
   }
+}
+
+@media screen and (max-width: 699px) {
+  .leaderboard-overlay {
+    .leaderboard-content {
+      padding: 1rem;
+      width: 95%;
+
+      .all-profiles {
+        .player-entry {
+          padding: 8px;
+
+          .rank,
+          .name,
+          .score {
+            font-size: 14px;
+          }
+        }
+      }
+    }
   }
+}
+
+.duration-filter {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+
+  button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #333;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 0 5px;
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: #e0e0e0;
+    }
+
+    &.active {
+      background-color: #007bff;
+      border-color: #007bff;
+      color: white;
+    }
+  }
+}
+
+.score-submission-container {
+  max-width: 300px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #282c34; // Darker background color
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.score-submission-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.score-submission-label {
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #d7dadc; // Light text color for better contrast
+}
+
+.score-submission-input {
+  width: 100%;
+  padding: 10px; // Increased padding to match button
+  margin-top: 5px;
+  border: 1px solid #3a3a3c;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: #1a1a1b; // Darker input background
+  color: #d7dadc; // Light text color
+}
+
+.score-submission-button {
+  width: 100%; // Full width to match input
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin-top: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.score-submission-button:hover {
+  background-color: #45a049;
 }
