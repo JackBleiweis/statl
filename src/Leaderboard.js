@@ -1,24 +1,222 @@
-import React, { useEffect, useState } from "react";
-import Profiles from "./Profiles";
-import ScoreSubmissionForm from "./ScoreSubmissionForm";
+import React, { useEffect, useState, useRef } from "react";
+import moment from "moment";
+import styled from "styled-components";
+import BeatLoader from "react-spinners/BeatLoader";
 
-const Leaderboard = (props) => {
-  const {
-    setShowLeaderboard,
-    gauntletScore,
-    submitted,
-    setSubmitted,
-    allowNameSubmission,
-  } = props;
-  const [timeFilter, setTimeFilter] = useState("all");
+// Styled Components
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+`;
+
+const ModalContainer = styled.div`
+  position: relative;
+  background-color: #282c34;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  max-height: 80vh;
+  width: 90%;
+  max-width: 350px;
+  min-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  @media screen and (max-width: 768px) {
+    padding: 1rem 2rem;
+    min-height: 60vh;
+    max-height: 85vh;
+    max-width: 60vw;
+    width: 60%;
+  }
+`;
+
+const Title = styled.p`
+  margin: 5px 0px 10px;
+  font-weight: bold;
+  font-size: 28px;
+
+  @media screen and (max-width: 768px) {
+    margin: 5px 0px 5px;
+  }
+`;
+
+const Tabs = styled.div`
+  position: relative; // Add position relative to the Tabs container
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-bottom: 20px;
+`;
+
+const Tab = styled.div`
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px;
+  cursor: pointer;
+  position: relative; // Add position relative to the Tab
+  color: white;
+
+  // Pseudo-element for the sliding border
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #4a90e2;
+    transform: scaleX(0); // Start with scaleX(0)
+    transition: transform 0.3s ease; // Transition for the sliding effect
+  }
+
+  // When the tab is active, scale the border to full width
+  ${(props) =>
+    props.active &&
+    `
+    &::after {
+      transform: scaleX(1); // Scale to full width when active
+    }
+  `}
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
+  }
+`;
+
+const LeaderboardList = styled.div`
+  width: 100%;
+`;
+
+const LoadingContainer = styled.div`
+  margin-top: 20vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ListItemContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0;
+`;
+
+const Rank = styled.div`
+  font-weight: bold;
+  color: white;
+  font-size: 18px;
+  margin-right: 10px;
+  min-width: 15px;
+
+  @media screen and (max-width: 768px) {
+    font-size: 14px;
+  }
+`;
+
+const ListItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #4a90e2;
+  color: white;
+  padding: 8px;
+  border-radius: 5px;
+  min-width: 80%;
+
+  @media screen and (max-width: 768px) {
+    padding: 6px 8px;
+  }
+`;
+
+const Name = styled.div`
+  font-weight: bold;
+  flex-grow: 1;
+  margin-left: 10px;
+  text-align: left;
+
+  @media screen and (max-width: 768px) {
+    font-size: 14px;
+  }
+`;
+
+const Score = styled.div`
+  font-weight: bold;
+  margin-right: 8px;
+  text-align: center;
+  min-width: 15px;
+
+  @media screen and (max-width: 768px) {
+    font-size: 14px;
+  }
+`;
+
+// Mock Data
+const mockData = [
+  { name: "Mike", score: 20 },
+  { name: "Jack", score: 18 },
+  { name: "Cole", score: 15 },
+  { name: "Jake", score: 14 },
+  { name: "Ben", score: 11 },
+];
+
+const Leaderboard = ({ setShowLeaderboard }) => {
+  const [activeTab, setActiveTab] = React.useState("All Time");
   const [profiles, setProfiles] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [showProfiles, setShowProfiles] = useState(profiles);
+  const [loading, setLoading] = useState(false); // State to track loading
+  const modalRef = useRef(null);
+
+  const filterByLast7Days = (profiles) => {
+    const today = moment();
+    const startOfPeriod = today.subtract(7, "days"); // Start 7 days ago
+
+    return profiles.filter((profile) => {
+      const profileDate = moment(profile.date);
+      return profileDate.isAfter(startOfPeriod); // Include profiles from the last 7 days
+    });
+  };
+
+  const filterByLast30Days = (profiles) => {
+    const today = moment();
+    const startOfPeriod = today.subtract(30, "days"); // Start 30 days ago
+
+    return profiles.filter((profile) => {
+      const profileDate = moment(profile.date);
+      return profileDate.isAfter(startOfPeriod); // Include profiles from the last 30 days
+    });
+  };
+
+  const handleTabSwitch = (tabSelection) => {
+    switch (tabSelection) {
+      case "Last 30":
+        setShowProfiles(filterByLast30Days(profiles));
+        setActiveTab("Last 30");
+        break;
+      case "Last 7":
+        setShowProfiles(filterByLast7Days(profiles));
+        setActiveTab("Last 7");
+        break;
+      default:
+        setShowProfiles(profiles);
+        setActiveTab("All Time");
+        break;
+    }
+  };
 
   useEffect(() => {
     const fetchProfiles = async () => {
-      setLoading(true);
-      setError(null);
+      setLoading(true); // Set loading to true
       try {
         const response = await fetch("/.netlify/functions/getProfiles");
         if (!response.ok) {
@@ -26,102 +224,80 @@ const Leaderboard = (props) => {
         }
         const data = await response.json();
         setProfiles(data);
-        console.log("Fetched profiles:", data);
       } catch (error) {
         console.error("Error fetching profiles:", error);
-        setError("Failed to load leaderboard. Please try again.");
       } finally {
-        setLoading(false);
+        setLoading(false); // Set loading to false
       }
     };
 
     fetchProfiles();
   }, []);
 
-  const handleDurationClick = (time) => {
-    setTimeFilter(time);
-  };
-
-  const handleSubmit = async (scoreData) => {
-    try {
-      setSubmitted(true);
-      const response = await fetch("/.netlify/functions/submitScore", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(scoreData),
-      });
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        setShowLeaderboard(false);
       }
-      const data = await response.json();
-      console.log("Score submitted successfully:", data);
-      // Optionally, you can update the profiles state here to include the new score
-      setProfiles((prevProfiles) => [...prevProfiles, data]);
-    } catch (error) {
-      console.error("Error submitting score:", error);
-      setError("Failed to submit score. Please try again.");
-      setSubmitted(false);
-    }
-  };
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [setShowLeaderboard]);
+
+  useEffect(() => {
+    setShowProfiles(profiles);
+  }, [profiles]);
 
   return (
-    <>
-      <div
-        className="leaderboard-overlay"
-        onClick={() => setShowLeaderboard(false)}
-      >
-        <div
-          className="leaderboard-content"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <h1>Leaderboard</h1>
-          <div className="duration-filter">
-            <button
-              className={timeFilter === "all" ? "active" : ""}
-              onClick={() => handleDurationClick("all")}
-            >
-              All Time
-            </button>
-            <button
-              className={timeFilter === "month" ? "active" : ""}
-              onClick={() => handleDurationClick("month")}
-            >
-              Last 30 Days
-            </button>
-            <button
-              className={timeFilter === "week" ? "active" : ""}
-              onClick={() => handleDurationClick("week")}
-            >
-              Last 7 Days
-            </button>
-          </div>
+    <ModalOverlay>
+      <ModalContainer ref={modalRef}>
+        <Title>Leaderboard</Title>
+        <Tabs>
+          <Tab
+            active={activeTab === "All Time"}
+            onClick={() => handleTabSwitch("All Time")}
+          >
+            All Time
+          </Tab>
+          <Tab
+            active={activeTab === "Last 30"}
+            onClick={() => handleTabSwitch("Last 30")}
+          >
+            Last 30
+          </Tab>
+          <Tab
+            active={activeTab === "Last 7"}
+            onClick={() => handleTabSwitch("Last 7")}
+          >
+            Last 7
+          </Tab>
+        </Tabs>
+
+        <LeaderboardList>
           {loading ? (
-            <p>Loading leaderboard...</p>
-          ) : error ? (
-            <p>{error}</p>
+            <LoadingContainer>
+              <BeatLoader color="#fff" />
+            </LoadingContainer>
           ) : (
-            <div className="all-scores">
-              <Profiles
-                timeFilter={timeFilter}
-                profiles={profiles}
-                setProfiles={setProfiles}
-              />
-            </div>
+            showProfiles
+              .sort((a, b) => b.score - a.score)
+              .slice(0, 10)
+              .map((item, index) => (
+                <ListItemContainer key={index}>
+                  <Rank>{index + 1}.</Rank>
+                  <ListItem>
+                    <Name>{item.name}</Name>
+                    <Score>{item.score}</Score>
+                  </ListItem>
+                </ListItemContainer>
+              ))
           )}
-          {allowNameSubmission &&
-            (!submitted ? (
-              <ScoreSubmissionForm
-                onSubmit={handleSubmit}
-                gauntletScore={gauntletScore}
-              />
-            ) : (
-              <div>Thanks for playing! Refresh and play again!</div>
-            ))}
-        </div>
-      </div>
-    </>
+        </LeaderboardList>
+      </ModalContainer>
+    </ModalOverlay>
   );
 };
 
