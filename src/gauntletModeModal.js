@@ -90,7 +90,6 @@ const GauntletModeModal = ({
       navigator.clipboard
         .writeText(fullText)
         .then(() => {
-          console.log("in here");
           setIsCopied(true);
           setTimeout(() => setIsCopied(false), 2000);
         })
