@@ -143,7 +143,7 @@ const App = () => {
   const [gauntletMode, setGauntletMode] = useState(true);
   const [strikes, setStrikes] = useState(3);
   const [gauntletScore, setGauntletScore] = useState(0);
-  const [isGauntletModalOpen, setIsGauntletModalOpen] = useState(false);
+  const [isGauntletModalOpen, setIsGauntletModalOpen] = useState(true);
   const [gauntletPlayer, setGauntletPlayer] = useState(null);
   const [gauntletLeagueEnum, setGauntletLeagueEnum] = useState(null);
   const [gauntletHighScore, setGauntletHighScore] = useState(0);
