@@ -1409,7 +1409,6 @@ const players = [
   "Mark Vientos",
   "Mark Williams",
   "Markelle Fultz",
-  "Marquise Brown",
   "MarShawn Lloyd",
   "Martin Fehervary",
   "Martin Jones",
@@ -1649,7 +1648,6 @@ const players = [
   "Patrick Bailey",
   "Patrick Kane",
   "Patrick Mahomes",
-  "Patrick Mahomes II",
   "Patrick Peterson",
   "Patrick Taylor Jr.",
   "Patrick Williams",
@@ -2151,7 +2149,7 @@ const players = [
   "Zebby Matthews",
   "Zeke Nnaji",
   "Ziaire Williams",
-  "Zion Williamson"
+  "Zion Williamson",
 ];
 
 export default players;

@@ -705,6 +705,7 @@ const App = () => {
   };
 
   const handleOpenLeaderboard = () => {
+    console.log("handleOpenLeaderboard");
     setShowLeaderboard(true);
     setIsGauntletModalOpen(false);
   };
