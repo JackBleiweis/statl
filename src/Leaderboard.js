@@ -128,8 +128,13 @@ const ListItem = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #4a90e2;
-  color: white;
+  background-color: ${(props) => {
+    if (props.rank === 1) return "#C59E01"; // Gold
+    if (props.rank === 2) return "#C0C0C0"; // Silver
+    if (props.rank === 3) return "#B87333"; // Darker shade of Bronze
+    return "#4a90e2"; // Default blue for other ranks
+  }};
+  color: "black";
   padding: 8px;
   border-radius: 5px;
   min-width: 80%;
@@ -288,7 +293,7 @@ const Leaderboard = ({ setShowLeaderboard }) => {
               .map((item, index) => (
                 <ListItemContainer key={index}>
                   <Rank>{index + 1}.</Rank>
-                  <ListItem>
+                  <ListItem rank={index + 1}>
                     <Name>{item.name}</Name>
                     <Score>{item.score}</Score>
                   </ListItem>
