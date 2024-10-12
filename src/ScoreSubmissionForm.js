@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FaArrowCircleRight } from "react-icons/fa";
 
 const ScoreSubmissionForm = (props) => {
   const { onSubmit, gauntletScore } = props;
@@ -15,7 +16,11 @@ const ScoreSubmissionForm = (props) => {
       score: gauntletScore,
       formattedDate,
     };
-    onSubmit(data);
+    if (typeof onSubmit === "function") {
+      onSubmit(data);
+    } else {
+      console.error("onSubmit is not a function");
+    }
     setName("");
   };
 
@@ -23,17 +28,17 @@ const ScoreSubmissionForm = (props) => {
     <div className="score-submission-container">
       <form className="score-submission-form" onSubmit={handleSubmit}>
         <label className="score-submission-label">
-          Name:
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
             className="score-submission-input"
+            placeholder="Save name to leaderboard..."
           />
         </label>
         <button type="submit" className="score-submission-button">
-          Submit
+          <FaArrowCircleRight style={{ bottom: "-1px" }} />
         </button>
       </form>
     </div>

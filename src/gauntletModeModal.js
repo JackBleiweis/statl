@@ -7,6 +7,7 @@ import "./modal.scss";
 import { FaCheckCircle } from "react-icons/fa";
 import { FaShare } from "react-icons/fa";
 import { FaClipboardCheck } from "react-icons/fa";
+import ScoreSubmissionForm from "./ScoreSubmissionForm";
 
 const GauntletModeModal = ({
   isOpen,
@@ -25,6 +26,8 @@ const GauntletModeModal = ({
   const [isClosing, setIsClosing] = useState(false);
   const [noSelectedLeaguesFlag, setNoSelectedLeaguesFlag] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [error, setError] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const handleClose = useCallback(() => {
     setIsClosing(true);
@@ -118,6 +121,30 @@ const GauntletModeModal = ({
       console.error("Fallback: Oops, unable to copy", err);
     }
     document.body.removeChild(textArea);
+  };
+
+  const handleSubmit = async (scoreData) => {
+    try {
+      setSubmitted(true);
+      const response = await fetch("/.netlify/functions/submitScore", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(scoreData),
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log("Score submitted successfully:", data);
+      // Optionally, you can update the profiles state here to include the new score
+      handleOpenLeaderboard();
+    } catch (error) {
+      console.error("Error submitting score:", error);
+      setError("Failed to submit score. Please try again.");
+      setSubmitted(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -232,21 +259,14 @@ const GauntletModeModal = ({
                 </div>
                 {isCopied ? "Copied" : "Share"}
               </button>
-              <button
-                onClick={() => {
-                  handleOpenLeaderboard();
-                  setAllowNameSubmission(true);
-                }}
-                style={{
-                  textAlign: "center",
-                  fontFamily: "Poppins",
-                  fontSize: "12px",
-                  display: "flex",
-                  justifyContent: "center",
-                }}
+              <div
+                style={{ display: "flex", width: "100%", marginTop: "10px" }}
               >
-                Save your score!
-              </button>
+                <ScoreSubmissionForm
+                  onSubmit={handleSubmit}
+                  gauntletScore={gauntletScore}
+                />
+              </div>
             </div>
             <h3 style={{ marginBottom: "0px", textAlign: "center" }}>
               Guess Details

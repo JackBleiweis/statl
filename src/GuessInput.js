@@ -282,7 +282,7 @@ const GuessInput = ({
       <InputContainer>
         <Input
           ref={inputRef}
-          disabled={disabled}
+          disabled={disabled || strikesLeft === 0}
           type="text"
           value={guess || ""}
           onChange={handleGuessChange}

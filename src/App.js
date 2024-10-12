@@ -140,7 +140,7 @@ const App = () => {
   const [isRulesModalOpen, setIsRulesModalOpen] = useState(false);
 
   //Gauntlet Mode states
-  const [gauntletMode, setGauntletMode] = useState(false);
+  const [gauntletMode, setGauntletMode] = useState(true);
   const [strikes, setStrikes] = useState(3);
   const [gauntletScore, setGauntletScore] = useState(0);
   const [isGauntletModalOpen, setIsGauntletModalOpen] = useState(false);
@@ -705,6 +705,7 @@ const App = () => {
   };
 
   const handleOpenLeaderboard = () => {
+    console.log("handleOpenLeaderboard");
     setShowLeaderboard(true);
     setIsGauntletModalOpen(false);
   };
