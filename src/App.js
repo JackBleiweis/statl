@@ -780,10 +780,10 @@ const App = () => {
       {showLeaderboard && (
         <Leaderboard
           setShowLeaderboard={setShowLeaderboard}
-          gauntletScore={gauntletScore}
-          submitted={submitted}
-          setSubmitted={setSubmitted}
-          allowNameSubmission={allowNameSubmission}
+          // gauntletScore={gauntletScore}
+          // submitted={submitted}
+          // setSubmitted={setSubmitted}
+          // allowNameSubmission={allowNameSubmission}
         />
       )}
       <div className="sticky-header">

@@ -15,7 +15,6 @@ const ScoreSubmissionForm = (props) => {
       score: gauntletScore,
       formattedDate,
     };
-    console.log(data);
     onSubmit(data);
     setName("");
   };
